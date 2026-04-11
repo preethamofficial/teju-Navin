@@ -181,6 +181,51 @@ export function getSyncMode() {
   return getSyncWebhookConfig() ? "webhook" : "none";
 }
 
+export async function loadDrivePhotos(limit = 120) {
+  const config = getSyncWebhookConfig();
+
+  if (!config) {
+    throw new Error("Drive webhook is not configured.");
+  }
+
+  const isAppsScriptWebhook = /script\.google\.com\/macros\/s\//i.test(config.url);
+
+  if (!isAppsScriptWebhook) {
+    throw new Error("All Photos currently works with Google Apps Script webhook URLs.");
+  }
+
+  const endpoint = new URL(config.url);
+  endpoint.searchParams.set("action", "list");
+  endpoint.searchParams.set("limit", String(limit));
+
+  const response = await fetch(endpoint.toString(), {
+    method: "GET",
+    mode: "cors",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Unable to load Drive photos: ${response.status}`);
+  }
+
+  const result = await response.json();
+
+  if (!result?.ok) {
+    throw new Error(result?.message || "Unable to load Drive photos.");
+  }
+
+  const photos = Array.isArray(result.photos) ? result.photos : [];
+
+  return photos.map((photo) => ({
+    id: photo.id,
+    name: photo.name,
+    url: photo.thumbnailUrl || photo.downloadUrl || photo.webViewLink,
+    downloadUrl: photo.downloadUrl || photo.webViewLink,
+    source: "drive",
+    createdAt: photo.createdAt || new Date().toISOString(),
+    sync: "forwarded",
+  }));
+}
+
 async function forwardPhotoToSyncWebhook(photo) {
   const config = getSyncWebhookConfig();
 

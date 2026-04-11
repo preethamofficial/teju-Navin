@@ -41,6 +41,72 @@ function sanitizeFileName(name) {
     .replace(/[^a-z0-9.-]/g, "");
 }
 
+function verifySecret(providedSecret) {
+  const expectedSecret = CONFIG.WEBHOOK_SECRET || "";
+  if (expectedSecret && providedSecret !== expectedSecret) {
+    throw new Error("Invalid secret");
+  }
+}
+
+function getQueryParam(e, key) {
+  return (e && e.parameter && e.parameter[key]) || "";
+}
+
+function buildDrivePhotoItem(file) {
+  const fileId = file.getId();
+  return {
+    id: fileId,
+    name: file.getName(),
+    createdAt: file.getDateCreated().toISOString(),
+    updatedAt: file.getLastUpdated().toISOString(),
+    webViewLink: file.getUrl(),
+    // Requires file to be shared with link view access.
+    thumbnailUrl: `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`,
+    downloadUrl: `https://drive.google.com/uc?export=view&id=${fileId}`,
+  };
+}
+
+function listDrivePhotos(limit) {
+  const folder = DriveApp.getFolderById(getFolderId());
+  const files = folder.getFiles();
+  const photos = [];
+
+  while (files.hasNext()) {
+    const file = files.next();
+    photos.push(buildDrivePhotoItem(file));
+  }
+
+  photos.sort(function (a, b) {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  return photos.slice(0, limit);
+}
+
+function doGet(e) {
+  try {
+    const action = getQueryParam(e, "action");
+    const secret = getQueryParam(e, "secret");
+    verifySecret(secret);
+
+    if (action === "list") {
+      const rawLimit = Number(getQueryParam(e, "limit") || "120");
+      const limit = Number.isFinite(rawLimit) ? Math.max(1, Math.min(rawLimit, 500)) : 120;
+      return json({ ok: true, photos: listDrivePhotos(limit) }, 200);
+    }
+
+    return json({ ok: true, message: "Drive sync endpoint is running." }, 200);
+  } catch (error) {
+    return json(
+      {
+        ok: false,
+        message: error && error.message ? error.message : "Unknown error",
+      },
+      500
+    );
+  }
+}
+
 function blobFromDataUrl(dataUrl, fileName) {
   const match = (dataUrl || "").match(/^data:([^;]+);base64,(.+)$/);
   if (!match) {
@@ -55,17 +121,10 @@ function blobFromDataUrl(dataUrl, fileName) {
 
 function doPost(e) {
   try {
-    const secret = (e && e.parameter && e.parameter.secret) || "";
+    const secret = getQueryParam(e, "secret");
+    verifySecret(secret);
     const bodyText = (e && e.postData && e.postData.contents) || "{}";
     const payload = JSON.parse(bodyText);
-
-    const headerSecret =
-      (payload && payload.__headers && payload.__headers["x-sync-secret"]) || "";
-
-    const providedSecret = secret || headerSecret;
-    if (CONFIG.WEBHOOK_SECRET && providedSecret !== CONFIG.WEBHOOK_SECRET) {
-      return json({ ok: false, message: "Invalid secret" }, 401);
-    }
 
     const photo = payload.photo || {};
     const url = photo.downloadUrl || photo.url;
@@ -94,6 +153,12 @@ function doPost(e) {
 
     const folder = DriveApp.getFolderById(getFolderId());
     const file = folder.createFile(blob);
+
+    try {
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch (sharingError) {
+      // Sharing can fail in restricted domains; save still succeeds.
+    }
 
     return json({
       ok: true,

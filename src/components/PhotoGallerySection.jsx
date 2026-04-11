@@ -2,7 +2,7 @@ import { startTransition, useDeferredValue, useEffect, useRef, useState } from "
 import { AnimatePresence, motion } from "motion/react";
 import { CloseIcon, DownloadIcon, PhotoIcon, UploadCloudIcon } from "./Icons";
 import { SectionHeading } from "./SectionHeading";
-import { getSyncMode, getUploadMode, loadStoredPhotos, uploadPhoto } from "../lib/uploadService";
+import { getSyncMode, getUploadMode, loadDrivePhotos, loadStoredPhotos, uploadPhoto } from "../lib/uploadService";
 
 function formatDateLabel(dateString) {
   return new Date(dateString).toLocaleDateString("en-IN", {
@@ -51,7 +51,11 @@ function GalleryLightbox({ photo, onClose }) {
                 <p className="font-display text-3xl text-[#f8d9a8]">{photo.name}</p>
                 <p className="mt-1 text-sm text-white/72">
                   Uploaded {formatDateLabel(photo.createdAt)} |{" "}
-                  {photo.source === "firebase" ? "Synced to Firebase Storage" : "Saved with simulated cloud storage"}
+                  {photo.source === "firebase"
+                    ? "Synced to Firebase Storage"
+                    : photo.source === "drive"
+                      ? "Loaded from Google Drive"
+                      : "Saved with simulated cloud storage"}
                 </p>
               </div>
 
@@ -76,6 +80,7 @@ export function PhotoGallerySection() {
   const [photos, setPhotos] = useState([]);
   const [status, setStatus] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [loadingAllPhotos, setLoadingAllPhotos] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [activePhoto, setActivePhoto] = useState(null);
   const uploadMode = getUploadMode();
@@ -160,6 +165,25 @@ export function PhotoGallerySection() {
     }
   }
 
+  async function handleLoadAllPhotos() {
+    if (loadingAllPhotos) {
+      return;
+    }
+
+    setLoadingAllPhotos(true);
+    setStatus("Loading all photos from Google Drive...");
+
+    try {
+      const drivePhotos = await loadDrivePhotos(200);
+      setPhotos(drivePhotos.slice(0, 200));
+      setStatus(`Loaded ${drivePhotos.length} photo(s) from Google Drive.`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Unable to load Drive photos.");
+    } finally {
+      setLoadingAllPhotos(false);
+    }
+  }
+
   return (
     <section id="gallery" className="section-shell pb-24 pt-14">
       <motion.div
@@ -210,14 +234,26 @@ export function PhotoGallerySection() {
             Showing latest 10 photos
           </p>
 
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#6a2330] px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_34px_rgba(106,35,48,0.22)] transition hover:-translate-y-0.5 hover:bg-[#571b27]"
-          >
-            <PhotoIcon className="h-4 w-4" />
-            {uploading ? "Uploading..." : "Choose photos"}
-          </button>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-2 rounded-full bg-[#6a2330] px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_34px_rgba(106,35,48,0.22)] transition hover:-translate-y-0.5 hover:bg-[#571b27]"
+            >
+              <PhotoIcon className="h-4 w-4" />
+              {uploading ? "Uploading..." : "Choose photos"}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLoadAllPhotos}
+              disabled={loadingAllPhotos}
+              className="inline-flex items-center gap-2 rounded-full border border-[#6a2330]/30 bg-white/70 px-6 py-3 text-sm font-semibold text-[#6a2330] transition hover:-translate-y-0.5 hover:bg-white disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              <PhotoIcon className="h-4 w-4" />
+              {loadingAllPhotos ? "Loading..." : "All photos"}
+            </button>
+          </div>
 
           <input
             ref={fileInputRef}
@@ -288,7 +324,11 @@ export function PhotoGallerySection() {
               <div className="px-1 pb-1 pt-3">
                 <p className="truncate font-semibold text-[#4f1e28]">{photo.name}</p>
                 <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[#8a645e]">
-                  {photo.source === "firebase" ? "Firebase" : "Simulated cloud"} | {formatDateLabel(photo.createdAt)}
+                  {photo.source === "firebase"
+                    ? "Firebase"
+                    : photo.source === "drive"
+                      ? "Google Drive"
+                      : "Simulated cloud"} | {formatDateLabel(photo.createdAt)}
                 </p>
                 <p className="mt-1 text-[11px] text-[#8a645e]">
                   {photo.sync === "forwarded"
