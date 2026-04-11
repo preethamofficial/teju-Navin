@@ -20,12 +20,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module">
-      const isGithubPages = window.location.hostname.endsWith("github.io");
-      if (isGithubPages) {
-        import("/wedding_invitation/dist/assets/app.js");
-      }
-    </script>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="./dist/assets/app.js"></script>
   </body>
 </html>
