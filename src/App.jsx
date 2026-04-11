@@ -9,7 +9,7 @@ import receptionScene from "../analysis-frames/candidates/frame-22.jpg";
 import muhurthamScene from "../analysis-frames/candidates/frame-29_5.jpg";
 import { EventCard } from "./components/EventCard";
 import { IntroVideo } from "./components/IntroVideo";
-import { MapPinIcon, SacredUnionIcon } from "./components/Icons";
+import { MapPinIcon } from "./components/Icons";
 import { PhotoGallerySection } from "./components/PhotoGallerySection";
 import { SectionHeading } from "./components/SectionHeading";
 
@@ -41,64 +41,47 @@ function InvitationHero() {
       style={{ backgroundImage: `url(${invitationScene})` }}
     >
       <div className="hero-veil rounded-[2rem] px-4 py-7 sm:px-8 sm:py-9">
-        <div className="mx-auto max-w-3xl rounded-[2rem] border border-[#f2ddbb]/68 bg-[linear-gradient(180deg,rgba(146,107,50,0.2),rgba(255,249,240,0.12)),rgba(94,53,20,0.18)] px-5 py-6 text-white shadow-[0_16px_50px_rgba(20,7,10,0.2)] backdrop-blur-[8px] sm:px-7">
-          <p className="hero-invitation-label">Wedding Invitation</p>
+        <div className="hero-invite-panel mx-auto max-w-3xl rounded-[2rem] border border-[#f2ddbb]/68 px-5 py-6 text-white sm:px-7">
+          <p className="hero-invite-kicker">Wedding Invitation</p>
+          <h2 className="hero-invite-title">Together with our families</h2>
+          <p className="hero-invite-note">We invite you and your loved ones to celebrate our wedding.</p>
 
-          <p className="mt-5 font-display text-[1.28rem] leading-[1.45] text-[#fff5e8] sm:text-[1.78rem]">
-            Together with our families, we cordially invite you and your beloved family
-            <br />
-            to grace the auspicious wedding ceremony
-            <br />
-            and bless the couple with your presence.
-          </p>
+          <div className="hero-meta" aria-label="Wedding details">
+            <span>23 April 2026</span>
+            <span>RG Convention Hall</span>
+          </div>
 
-          <div className="mx-auto mt-6 h-px w-28 bg-gradient-to-r from-transparent via-[#ffe3b9] to-transparent" />
-
-          <div className="mt-6 flex flex-col items-center justify-center gap-5">
-            <div className="hero-template-frame hero-template-frame--grand">
+          <div className="mt-4 flex flex-col items-center justify-center gap-5 sm:mt-5">
+            <div className="hero-couple-frame">
               <img
                 src={weddingTemplateHero}
                 alt="Traditional Hindu wedding ceremony illustration"
-                className="hero-template-image"
+                className="hero-couple-image"
               />
 
-              <div className="grand-couple-overlay">
-                <div className="grand-couple-shell">
-                  <p className="grand-couple-eyebrow">Bride &amp; Groom</p>
-                  <div className="grand-couple-name-card">
-                    <p className="grand-couple-role">The Bride</p>
-                    <h1 className="grand-couple-name">
-                      <span>Teja</span>
-                      <span>Shree A</span>
-                    </h1>
+              <div className="hero-couple-overlay">
+                <div className="hero-couple-shell">
+                  <p className="hero-couple-role">The Bride</p>
+                  <h1 className="hero-couple-name">
+                    Teja Shree <span className="uppercase">A</span>
+                  </h1>
+
+                  <div className="hero-couple-divider" aria-hidden="true">
+                    <span />
+                    <span className="hero-couple-divider-core">&amp;</span>
+                    <span />
                   </div>
 
-                  <div className="grand-couple-icon-wrap" aria-hidden="true">
-                    <span className="grand-couple-icon-line" />
-                    <span className="grand-couple-icon-core">
-                      <span className="grand-couple-icon-halo">
-                        <SacredUnionIcon className="h-10 w-10 sm:h-12 sm:w-12" />
-                      </span>
-                    </span>
-                    <span className="grand-couple-icon-line" />
-                  </div>
-                  <p className="grand-couple-join">Sacred Union</p>
-
-                  <div className="grand-couple-name-card grand-couple-name-card--groom">
-                    <p className="grand-couple-role">The Groom</p>
-                    <h1 className="grand-couple-name grand-couple-name--groom">
-                      <span>Navin</span>
-                      <span>Reddy S</span>
-                    </h1>
-                  </div>
+                  <p className="hero-couple-role">The Groom</p>
+                  <h1 className="hero-couple-name hero-couple-name--groom">
+                    Navin Reddy S
+                  </h1>
                 </div>
               </div>
             </div>
           </div>
 
-          <p className="mt-7 font-display text-[1.2rem] leading-tight text-[#ffe0bc] sm:text-[1.6rem]">
-            Kindly join us in celebrating this sacred union.
-          </p>
+          <p className="hero-invite-footer">We request the honor of your presence and blessings.</p>
         </div>
       </div>
     </motion.section>
