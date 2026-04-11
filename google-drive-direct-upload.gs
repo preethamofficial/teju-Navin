@@ -1,0 +1,121 @@
+// Google Apps Script: Direct upload endpoint to save photos into your Google Drive folder.
+// Deploy as Web App (Execute as: Me, Who has access: Anyone with the link).
+
+const CONFIG = {
+  // Paste only the folder ID (or keep link and auto-parse below).
+  DRIVE_FOLDER_ID: "",
+  // Optional: if you prefer, paste a folder link here instead of ID.
+  DRIVE_FOLDER_LINK: "https://drive.google.com/drive/folders/1yapxeu3Fwi1fgdCV92niDPKEAgp_UCyX?usp=sharing",
+  // Keep this secret and match with VITE_PHOTO_SYNC_WEBHOOK_SECRET.
+  WEBHOOK_SECRET: "2ebb40f0f7ed46249b0a77591f559546",
+};
+
+function getFolderId() {
+  if (CONFIG.DRIVE_FOLDER_ID) {
+    return CONFIG.DRIVE_FOLDER_ID.trim();
+  }
+
+  const link = (CONFIG.DRIVE_FOLDER_LINK || "").trim();
+  if (!link) {
+    throw new Error("Set DRIVE_FOLDER_ID or DRIVE_FOLDER_LINK.");
+  }
+
+  const folderMatch = link.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+  if (folderMatch && folderMatch[1]) {
+    return folderMatch[1];
+  }
+
+  const idMatch = link.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (idMatch && idMatch[1]) {
+    return idMatch[1];
+  }
+
+  throw new Error("Unable to parse folder id from DRIVE_FOLDER_LINK.");
+}
+
+function sanitizeFileName(name) {
+  return (name || "wedding-photo")
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9.-]/g, "");
+}
+
+function blobFromDataUrl(dataUrl, fileName) {
+  const match = (dataUrl || "").match(/^data:([^;]+);base64,(.+)$/);
+  if (!match) {
+    throw new Error("Invalid inline image data format.");
+  }
+
+  const mimeType = match[1] || "image/jpeg";
+  const base64Data = match[2] || "";
+  const bytes = Utilities.base64Decode(base64Data);
+  return Utilities.newBlob(bytes, mimeType, fileName);
+}
+
+function doPost(e) {
+  try {
+    const secret = (e && e.parameter && e.parameter.secret) || "";
+    const bodyText = (e && e.postData && e.postData.contents) || "{}";
+    const payload = JSON.parse(bodyText);
+
+    const headerSecret =
+      (payload && payload.__headers && payload.__headers["x-sync-secret"]) || "";
+
+    const providedSecret = secret || headerSecret;
+    if (CONFIG.WEBHOOK_SECRET && providedSecret !== CONFIG.WEBHOOK_SECRET) {
+      return json({ ok: false, message: "Invalid secret" }, 401);
+    }
+
+    const photo = payload.photo || {};
+    const url = photo.downloadUrl || photo.url;
+
+    const baseName = sanitizeFileName(photo.name || "wedding-photo.jpg");
+    const fileName = /\.[a-z0-9]+$/i.test(baseName) ? baseName : `${baseName}.jpg`;
+    const inlineDataUrl = photo.inlineDataUrl || (url && url.startsWith("data:") ? url : "");
+
+    let blob;
+
+    if (inlineDataUrl) {
+      blob = blobFromDataUrl(inlineDataUrl, fileName);
+    } else {
+      if (!url) {
+        return json({ ok: false, message: "Missing photo URL" }, 400);
+      }
+
+      const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+      if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
+        return json({ ok: false, message: "Could not download image" }, 502);
+      }
+
+      blob = response.getBlob();
+      blob.setName(fileName);
+    }
+
+    const folder = DriveApp.getFolderById(getFolderId());
+    const file = folder.createFile(blob);
+
+    return json({
+      ok: true,
+      uploaded: {
+        googleDrive: {
+          fileId: file.getId(),
+          name: file.getName(),
+          webViewLink: file.getUrl(),
+        },
+      },
+    });
+  } catch (error) {
+    return json({
+      ok: false,
+      message: error && error.message ? error.message : "Unknown error",
+    }, 500);
+  }
+}
+
+function json(data, statusCode) {
+  const output = ContentService.createTextOutput(JSON.stringify(data));
+  output.setMimeType(ContentService.MimeType.JSON);
+  // Apps Script web apps ignore custom HTTP status in many cases, but body remains consistent.
+  return output;
+}

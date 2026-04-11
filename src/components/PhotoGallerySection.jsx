@@ -120,7 +120,7 @@ export function PhotoGallerySection() {
             ),
           ];
 
-          return mergedPhotos.slice(0, 12);
+          return mergedPhotos.slice(0, 10);
         });
       });
 
@@ -198,6 +198,9 @@ export function PhotoGallerySection() {
             Add recent celebration photos from your phone or desktop, and they will appear below in a simple,
             elegant, and mobile-friendly gallery.
           </p>
+          <p className="mx-auto mt-2 max-w-2xl text-xs uppercase tracking-[0.22em] text-[#8a645e]">
+            Showing latest 10 photos
+          </p>
 
           <button
             type="button"
@@ -222,9 +225,11 @@ export function PhotoGallerySection() {
             <span>
               {uploadMode === "firebase"
                 ? syncMode === "webhook"
-                  ? "Firebase live + Google Photos webhook"
+                  ? "Firebase live + Google Drive webhook"
                   : "Firebase Storage live"
-                : "Cloud sync simulated"}
+                : syncMode === "webhook"
+                  ? "Direct Google Drive webhook"
+                  : "Cloud sync simulated"}
             </span>
           </div>
         </div>

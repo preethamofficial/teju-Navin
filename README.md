@@ -6,6 +6,27 @@ This project now supports:
 - Optional auto-forwarding of each uploaded photo to Google Photos through a secure backend webhook
 - Optional direct upload of each photo to a Google Drive folder link
 
+## Quickest option: Direct to your Drive (no Node backend)
+
+If OAuth + backend setup feels difficult, use Google Apps Script as your Drive upload endpoint.
+
+1. Open https://script.google.com and create a new script project.
+2. Copy content from [google-drive-direct-upload.gs](google-drive-direct-upload.gs) into Apps Script editor.
+3. In script CONFIG, set:
+  - `DRIVE_FOLDER_LINK` or `DRIVE_FOLDER_ID`
+  - `WEBHOOK_SECRET`
+4. Deploy:
+  - `Deploy` -> `New deployment` -> type `Web app`
+  - `Execute as`: `Me`
+  - `Who has access`: `Anyone with the link`
+5. Copy the Web App URL.
+6. In local/frontend env set:
+  - `VITE_PHOTO_SYNC_WEBHOOK_URL=<your-web-app-url>?secret=<WEBHOOK_SECRET>`
+  - `VITE_PHOTO_SYNC_WEBHOOK_SECRET=` (leave empty for Apps Script mode)
+7. Run or redeploy frontend.
+
+Now every photo upload goes to your Drive folder through that Apps Script URL.
+
 ## 1. Frontend setup
 
 Create a `.env` file (or use your deployment environment variables) with:

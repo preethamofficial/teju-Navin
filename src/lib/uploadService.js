@@ -2,7 +2,9 @@ import { getApps, initializeApp } from "firebase/app";
 import { getDownloadURL, getMetadata, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
 
 const STORAGE_KEY = "wedding-gallery-photos-v1";
-const MAX_SAVED_PHOTOS = 12;
+const MAX_SAVED_PHOTOS = 10;
+const DEFAULT_DRIVE_WEBHOOK_URL =
+  "https://script.google.com/macros/s/AKfycbwjtYZFVLi83kVse8CBQsdta65fKDROJRYL3vVEfb--MQ3GGq7TvfYlW75EqTU1K6vj/exec?secret=2ebb40f0f7ed46249b0a77591f559546";
 
 function getFirebaseConfig() {
   const {
@@ -50,13 +52,14 @@ function getFirebaseStorageInstance() {
 
 function getSyncWebhookConfig() {
   const { VITE_PHOTO_SYNC_WEBHOOK_URL, VITE_PHOTO_SYNC_WEBHOOK_SECRET } = import.meta.env;
+  const resolvedUrl = VITE_PHOTO_SYNC_WEBHOOK_URL || DEFAULT_DRIVE_WEBHOOK_URL;
 
-  if (!VITE_PHOTO_SYNC_WEBHOOK_URL) {
+  if (!resolvedUrl) {
     return null;
   }
 
   return {
-    url: VITE_PHOTO_SYNC_WEBHOOK_URL,
+    url: resolvedUrl,
     secret: VITE_PHOTO_SYNC_WEBHOOK_SECRET || "",
   };
 }
@@ -187,18 +190,36 @@ async function forwardPhotoToSyncWebhook(photo) {
 
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), 10000);
+  const isAppsScriptWebhook = /script\.google\.com\/macros\/s\//i.test(config.url);
+  const payload = {
+    photo,
+    source: "wedding_invitation",
+  };
 
   try {
+    if (isAppsScriptWebhook) {
+      // Apps Script web apps typically block CORS preflight checks.
+      // Use no-cors and a simple content type to allow background delivery.
+      await fetch(config.url, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+
+      return "forwarded";
+    }
+
     const response = await fetch(config.url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         ...(config.secret ? { "x-sync-secret": config.secret } : {}),
       },
-      body: JSON.stringify({
-        photo,
-        source: "wedding_invitation",
-      }),
+      body: JSON.stringify(payload),
       signal: controller.signal,
     });
 
@@ -253,7 +274,11 @@ export async function uploadPhoto(file) {
     sync: "firebase-only",
   };
 
-  if (source === "firebase") {
+  if (source !== "firebase") {
+    photo.inlineDataUrl = url;
+  }
+
+  if (getSyncWebhookConfig()) {
     photo.sync = await forwardPhotoToSyncWebhook(photo);
   }
 
