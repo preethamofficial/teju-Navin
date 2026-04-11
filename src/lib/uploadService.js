@@ -251,6 +251,10 @@ async function forwardPhotoToSyncWebhook(photo) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "unknown";
 
+    if (message.includes("Missing photo URL")) {
+      return "failed:Drive script is using old version. Please deploy latest Apps Script version.";
+    }
+
     if (message.includes("URLFetch URL length")) {
       return "failed:Drive script is using old version. Please deploy latest Apps Script version.";
     }
