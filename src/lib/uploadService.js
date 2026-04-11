@@ -1,5 +1,5 @@
 import { getApps, initializeApp } from "firebase/app";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, getMetadata, getStorage, listAll, ref, uploadBytes } from "firebase/storage";
 
 const STORAGE_KEY = "wedding-gallery-photos-v1";
 const MAX_SAVED_PHOTOS = 12;
@@ -46,6 +46,19 @@ function getFirebaseStorageInstance() {
 
   const app = getApps().length > 0 ? getApps()[0] : initializeApp(config);
   return getStorage(app);
+}
+
+function getSyncWebhookConfig() {
+  const { VITE_PHOTO_SYNC_WEBHOOK_URL, VITE_PHOTO_SYNC_WEBHOOK_SECRET } = import.meta.env;
+
+  if (!VITE_PHOTO_SYNC_WEBHOOK_URL) {
+    return null;
+  }
+
+  return {
+    url: VITE_PHOTO_SYNC_WEBHOOK_URL,
+    secret: VITE_PHOTO_SYNC_WEBHOOK_SECRET || "",
+  };
 }
 
 function sanitizeFileName(name) {
@@ -118,11 +131,87 @@ function writeStoredPhotos(photos) {
 }
 
 export async function loadStoredPhotos() {
+  const storage = getFirebaseStorageInstance();
+
+  if (storage) {
+    try {
+      const folderRef = ref(storage, "wedding-gallery");
+      const listed = await listAll(folderRef);
+
+      const firebasePhotos = await Promise.all(
+        listed.items.map(async (itemRef) => {
+          const [url, metadata] = await Promise.all([getDownloadURL(itemRef), getMetadata(itemRef)]);
+          const originalName = metadata.customMetadata?.originalName || itemRef.name;
+          const createdAt = metadata.customMetadata?.createdAt || metadata.timeCreated || new Date().toISOString();
+
+          return {
+            id: itemRef.name,
+            name: originalName,
+            url,
+            downloadUrl: url,
+            source: "firebase",
+            createdAt,
+            sync: metadata.customMetadata?.sync || "firebase-only",
+          };
+        })
+      );
+
+      const sortedPhotos = firebasePhotos
+        .sort((first, second) => new Date(second.createdAt).getTime() - new Date(first.createdAt).getTime())
+        .slice(0, MAX_SAVED_PHOTOS);
+
+      writeStoredPhotos(sortedPhotos);
+      return sortedPhotos;
+    } catch (error) {
+      // Fall back to local cache if listing fails.
+    }
+  }
+
   return readStoredPhotos();
 }
 
 export function getUploadMode() {
   return getFirebaseStorageInstance() ? "firebase" : "simulated";
+}
+
+export function getSyncMode() {
+  return getSyncWebhookConfig() ? "webhook" : "none";
+}
+
+async function forwardPhotoToSyncWebhook(photo) {
+  const config = getSyncWebhookConfig();
+
+  if (!config) {
+    return "disabled";
+  }
+
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const response = await fetch(config.url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(config.secret ? { "x-sync-secret": config.secret } : {}),
+      },
+      body: JSON.stringify({
+        photo,
+        source: "wedding_invitation",
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Sync webhook failed: ${response.status}`);
+    }
+
+    return "forwarded";
+  } catch (error) {
+    return "failed";
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 }
 
 export async function uploadPhoto(file) {
@@ -136,7 +225,16 @@ export async function uploadPhoto(file) {
 
   if (storage) {
     const fileRef = ref(storage, `wedding-gallery/${photoId}-${fileName}.jpg`);
-    await uploadBytes(fileRef, optimizedImage, { contentType: "image/jpeg" });
+    const createdAt = new Date().toISOString();
+
+    await uploadBytes(fileRef, optimizedImage, {
+      contentType: "image/jpeg",
+      customMetadata: {
+        originalName: `${fileName}.jpg`,
+        createdAt,
+      },
+    });
+
     url = await getDownloadURL(fileRef);
     source = "firebase";
   } else {
@@ -152,7 +250,12 @@ export async function uploadPhoto(file) {
     downloadUrl: url,
     source,
     createdAt: new Date().toISOString(),
+    sync: "firebase-only",
   };
+
+  if (source === "firebase") {
+    photo.sync = await forwardPhotoToSyncWebhook(photo);
+  }
 
   const currentPhotos = readStoredPhotos();
   writeStoredPhotos([photo, ...currentPhotos.filter((item) => item.id !== photo.id)]);

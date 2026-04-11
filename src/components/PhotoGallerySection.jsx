@@ -2,7 +2,7 @@ import { startTransition, useDeferredValue, useEffect, useRef, useState } from "
 import { AnimatePresence, motion } from "motion/react";
 import { CloseIcon, DownloadIcon, PhotoIcon, UploadCloudIcon } from "./Icons";
 import { SectionHeading } from "./SectionHeading";
-import { getUploadMode, loadStoredPhotos, uploadPhoto } from "../lib/uploadService";
+import { getSyncMode, getUploadMode, loadStoredPhotos, uploadPhoto } from "../lib/uploadService";
 
 function formatDateLabel(dateString) {
   return new Date(dateString).toLocaleDateString("en-IN", {
@@ -79,6 +79,7 @@ export function PhotoGallerySection() {
   const [dragging, setDragging] = useState(false);
   const [activePhoto, setActivePhoto] = useState(null);
   const uploadMode = getUploadMode();
+  const syncMode = getSyncMode();
   const deferredPhotos = useDeferredValue(photos);
 
   useEffect(() => {
@@ -218,7 +219,13 @@ export function PhotoGallerySection() {
 
           <div className="mt-5 flex flex-col gap-2 text-xs uppercase tracking-[0.24em] text-[#8a645e] sm:flex-row sm:items-center sm:justify-between">
             <span>{status || "Ready for wedding photo uploads from mobile or desktop"}</span>
-            <span>{uploadMode === "firebase" ? "Firebase Storage live" : "Cloud sync simulated"}</span>
+            <span>
+              {uploadMode === "firebase"
+                ? syncMode === "webhook"
+                  ? "Firebase live + Google Photos webhook"
+                  : "Firebase Storage live"
+                : "Cloud sync simulated"}
+            </span>
           </div>
         </div>
       </motion.div>
