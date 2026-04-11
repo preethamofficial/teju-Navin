@@ -198,17 +198,27 @@ async function forwardPhotoToSyncWebhook(photo) {
 
   try {
     if (isAppsScriptWebhook) {
-      // Apps Script web apps typically block CORS preflight checks.
-      // Use no-cors and a simple content type to allow background delivery.
-      await fetch(config.url, {
+      // Use a simple CORS request for Apps Script and read response body.
+      const response = await fetch(config.url, {
         method: "POST",
-        mode: "no-cors",
+        mode: "cors",
         headers: {
           "Content-Type": "text/plain;charset=utf-8",
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
       });
+
+      if (!response.ok) {
+        throw new Error(`Drive webhook failed: ${response.status}`);
+      }
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!result?.ok) {
+        const message = result?.message || "Drive webhook returned failure.";
+        throw new Error(message);
+      }
 
       return "forwarded";
     }
@@ -229,7 +239,8 @@ async function forwardPhotoToSyncWebhook(photo) {
 
     return "forwarded";
   } catch (error) {
-    return "failed";
+    const message = error instanceof Error ? error.message : "unknown";
+    return `failed:${message}`;
   } finally {
     window.clearTimeout(timeoutId);
   }

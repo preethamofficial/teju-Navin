@@ -111,6 +111,9 @@ export function PhotoGallerySection() {
         uploadedPhotos.push(uploadedPhoto);
       }
 
+      const syncedCount = uploadedPhotos.filter((photo) => photo.sync === "forwarded").length;
+      const failedSync = uploadedPhotos.filter((photo) => typeof photo.sync === "string" && photo.sync.startsWith("failed:"));
+
       startTransition(() => {
         setPhotos((currentPhotos) => {
           const mergedPhotos = [
@@ -124,11 +127,16 @@ export function PhotoGallerySection() {
         });
       });
 
-      setStatus(
-        uploadMode === "firebase"
-          ? "Upload complete. Your gallery is now synced to Firebase Storage."
-          : "Upload complete. Photos are saved now, and cloud sync is currently simulated until Firebase credentials are added."
-      );
+      if (failedSync.length > 0) {
+        const firstReason = failedSync[0].sync.replace(/^failed:/, "");
+        setStatus(`Upload saved, but Drive sync failed: ${firstReason}`);
+      } else if (syncMode === "webhook") {
+        setStatus(`Upload complete. ${syncedCount} photo(s) synced to Google Drive.`);
+      } else if (uploadMode === "firebase") {
+        setStatus("Upload complete. Your gallery is now synced to Firebase Storage.");
+      } else {
+        setStatus("Upload complete. Photos are saved locally.");
+      }
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Upload failed. Please try again.");
     } finally {
@@ -281,6 +289,13 @@ export function PhotoGallerySection() {
                 <p className="truncate font-semibold text-[#4f1e28]">{photo.name}</p>
                 <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[#8a645e]">
                   {photo.source === "firebase" ? "Firebase" : "Simulated cloud"} | {formatDateLabel(photo.createdAt)}
+                </p>
+                <p className="mt-1 text-[11px] text-[#8a645e]">
+                  {photo.sync === "forwarded"
+                    ? "Drive sync: success"
+                    : typeof photo.sync === "string" && photo.sync.startsWith("failed:")
+                      ? "Drive sync: failed"
+                      : "Drive sync: pending"}
                 </p>
               </div>
             </motion.button>
