@@ -22,8 +22,14 @@
     <div id="root"></div>
     <script type="module">
       const isGithubPages = window.location.hostname.endsWith("github.io");
-      const entry = isGithubPages ? "/wedding_invitation/dist/assets/app.js" : "/src/main.jsx";
-      import(/* @vite-ignore */ entry);
+      const forceDev = new URLSearchParams(window.location.search).has("dev");
+      const distEntry = isGithubPages ? "/wedding_invitation/dist/assets/app.js" : "/dist/assets/app.js";
+
+      if (forceDev) {
+        import("/src/main.jsx");
+      } else {
+        import(/* @vite-ignore */ distEntry).catch(() => import("/src/main.jsx"));
+      }
     </script>
   </body>
 </html>
