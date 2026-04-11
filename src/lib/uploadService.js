@@ -198,16 +198,33 @@ export async function loadDrivePhotos(limit = 120) {
   endpoint.searchParams.set("action", "list");
   endpoint.searchParams.set("limit", String(limit));
 
-  const response = await fetch(endpoint.toString(), {
-    method: "GET",
-    mode: "cors",
-  });
+  let response;
+
+  try {
+    response = await fetch(endpoint.toString(), {
+      method: "GET",
+      mode: "cors",
+    });
+  } catch (error) {
+    throw new Error("Unable to reach Drive script. Please redeploy Apps Script web app and try again.");
+  }
 
   if (!response.ok) {
     throw new Error(`Unable to load Drive photos: ${response.status}`);
   }
 
-  const result = await response.json();
+  const responseText = await response.text();
+  let result;
+
+  try {
+    result = JSON.parse(responseText);
+  } catch (error) {
+    if (responseText.includes("Script function not found: doGet")) {
+      throw new Error("Apps Script is old version. Deploy latest script version from Manage deployments.");
+    }
+
+    throw new Error("Drive list response was not valid. Please redeploy Apps Script web app.");
+  }
 
   if (!result?.ok) {
     throw new Error(result?.message || "Unable to load Drive photos.");
