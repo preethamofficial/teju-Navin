@@ -20,20 +20,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module">
-      const isGithubPages = window.location.hostname.endsWith("github.io");
-      const forceDev = new URLSearchParams(window.location.search).has("dev");
-      const entry = forceDev
-        ? "/src/main.jsx"
-        : isGithubPages
-          ? "/wedding_invitation/dist/assets/app.js"
-          : "/dist/assets/app.js";
-
-      import(/* @vite-ignore */ entry).catch(() => {
-        if (!forceDev) {
-          import("/src/main.jsx");
-        }
-      });
-    </script>
+    <script type="module" src="./dist/assets/main.js"></script>
   </body>
 </html>
