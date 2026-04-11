@@ -4,6 +4,7 @@ This project now supports:
 
 - Cross-device photo uploads via Firebase Storage
 - Optional auto-forwarding of each uploaded photo to Google Photos through a secure backend webhook
+- Optional direct upload of each photo to a Google Drive folder link
 
 ## 1. Frontend setup
 
@@ -31,6 +32,8 @@ Set backend environment values:
 - `GOOGLE_OAUTH_CLIENT_ID`
 - `GOOGLE_OAUTH_CLIENT_SECRET`
 - `GOOGLE_OAUTH_REDIRECT_URI`
+- `ENABLE_GOOGLE_PHOTOS_SYNC=true`
+- `ENABLE_GOOGLE_DRIVE_SYNC=true`
 
 Generate refresh token:
 
@@ -45,6 +48,13 @@ Copy output token into:
 Optional:
 
 - `GOOGLE_PHOTOS_ALBUM_ID` to push all uploads into one album.
+- `GOOGLE_DRIVE_FOLDER_ID` for direct Drive folder upload.
+- `GOOGLE_DRIVE_FOLDER_LINK` as an alternative to folder id (the server extracts id from the link).
+
+If you only want Google Drive uploads (no Photos), set:
+
+- `ENABLE_GOOGLE_PHOTOS_SYNC=false`
+- `ENABLE_GOOGLE_DRIVE_SYNC=true`
 
 ## 3. Run backend sync server locally
 
@@ -55,6 +65,7 @@ npm run sync-server
 The webhook endpoint is:
 
 - `POST /api/google-photos-sync`
+- `POST /api/photo-sync` (alias, same behavior)
 
 Health endpoint:
 
