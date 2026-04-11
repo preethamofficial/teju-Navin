@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: wedding-google-photos-sync
+    env: node
+    plan: free
+    rootDir: .
+    buildCommand: npm ci
+    startCommand: npm run start
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: PHOTO_SYNC_ALLOWED_ORIGINS
+        value: https://preethamofficial.github.io
+      - key: PHOTO_SYNC_WEBHOOK_SECRET
+        sync: false
+      - key: GOOGLE_OAUTH_CLIENT_ID
+        sync: false
+      - key: GOOGLE_OAUTH_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_OAUTH_REDIRECT_URI
+        sync: false
+      - key: GOOGLE_OAUTH_REFRESH_TOKEN
+        sync: false
+      - key: GOOGLE_PHOTOS_ALBUM_ID
+        sync: false

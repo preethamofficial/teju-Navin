@@ -6,7 +6,7 @@ const { google } = require("googleapis");
 dotenv.config();
 
 const app = express();
-const port = Number(process.env.PHOTO_SYNC_SERVER_PORT || 8787);
+const port = Number(process.env.PORT || process.env.PHOTO_SYNC_SERVER_PORT || 8787);
 
 const allowedOrigins = (process.env.PHOTO_SYNC_ALLOWED_ORIGINS || "")
   .split(",")
@@ -16,7 +16,12 @@ const allowedOrigins = (process.env.PHOTO_SYNC_ALLOWED_ORIGINS || "")
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      if (
+        !origin ||
+        allowedOrigins.length === 0 ||
+        allowedOrigins.includes("*") ||
+        allowedOrigins.includes(origin)
+      ) {
         callback(null, true);
         return;
       }
@@ -26,6 +31,14 @@ app.use(
   })
 );
 app.use(express.json({ limit: "1mb" }));
+
+app.get("/", (_req, res) => {
+  res.json({
+    ok: true,
+    service: "google-photos-sync",
+    routes: ["GET /health", "POST /api/google-photos-sync"],
+  });
+});
 
 function assertEnv(name) {
   const value = process.env[name];
