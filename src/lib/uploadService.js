@@ -191,8 +191,18 @@ async function forwardPhotoToSyncWebhook(photo) {
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), 10000);
   const isAppsScriptWebhook = /script\.google\.com\/macros\/s\//i.test(config.url);
+  const webhookPhoto = isAppsScriptWebhook
+    ? {
+        name: photo.name,
+        createdAt: photo.createdAt,
+        ...(photo.inlineDataUrl
+          ? { inlineDataUrl: photo.inlineDataUrl }
+          : { downloadUrl: photo.downloadUrl || photo.url }),
+      }
+    : photo;
+
   const payload = {
-    photo,
+    photo: webhookPhoto,
     source: "wedding_invitation",
   };
 
@@ -240,6 +250,11 @@ async function forwardPhotoToSyncWebhook(photo) {
     return "forwarded";
   } catch (error) {
     const message = error instanceof Error ? error.message : "unknown";
+
+    if (message.includes("URLFetch URL length")) {
+      return "failed:Drive script is using old version. Please deploy latest Apps Script version.";
+    }
+
     return `failed:${message}`;
   } finally {
     window.clearTimeout(timeoutId);
