@@ -1,9 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 
 export function IntroVideo({ src, poster, onComplete }) {
   const videoRef = useRef(null);
   const completedRef = useRef(false);
+  const playbackStartedRef = useRef(false);
+  const failSafeTimerRef = useRef(null);
+  const [isMuted, setIsMuted] = useState(true);
 
   const completeIntro = () => {
     if (completedRef.current) {
@@ -23,41 +26,35 @@ export function IntroVideo({ src, poster, onComplete }) {
 
     let disposed = false;
 
-    const playWithAudio = async () => {
-      video.currentTime = 0;
+    const playMuted = async () => {
       video.loop = false;
-      video.muted = false;
-      video.defaultMuted = false;
-      video.volume = 1;
-      video.autoplay = true;
-
-      await video.play();
-    };
-
-    const playMutedFallback = async () => {
       video.muted = true;
       video.defaultMuted = true;
       video.volume = 1;
       video.autoplay = true;
-
+      setIsMuted(true);
       await video.play();
     };
 
-    const tryAutoplay = async () => {
+    const tryAutoplayMuted = async () => {
       try {
-        await playWithAudio();
+        await playMuted();
       } catch (error) {
-        try {
-          await playMutedFallback();
-        } catch (retryError) {
-          // The first interaction below will retry playback if needed.
-        }
+        // Ignore autoplay failures. Fail-safe handles no-play scenarios.
       }
     };
 
     const handleReady = () => {
       if (!disposed) {
-        void tryAutoplay();
+        void tryAutoplayMuted();
+      }
+    };
+
+    const handlePlaying = () => {
+      playbackStartedRef.current = true;
+      if (failSafeTimerRef.current) {
+        window.clearTimeout(failSafeTimerRef.current);
+        failSafeTimerRef.current = null;
       }
     };
 
@@ -67,45 +64,47 @@ export function IntroVideo({ src, poster, onComplete }) {
       }
     };
 
-    const unlockAudio = async () => {
-      if (disposed || !video || video.ended) {
-        return;
-      }
-
-      try {
-        await playWithAudio();
-      } catch (error) {
-        // Ignore browser-level media restrictions here.
-      }
-    };
-
     if (video.readyState >= 2) {
-      void tryAutoplay();
+      void tryAutoplayMuted();
     } else {
       video.addEventListener("loadeddata", handleReady, { once: true });
     }
 
+    video.addEventListener("playing", handlePlaying);
     video.addEventListener("error", handleVideoError);
 
-    // Fail-safe so the invitation never gets stuck behind video autoplay restrictions.
-    const failSafeTimer = window.setTimeout(() => {
+    // Fail-safe only when playback never starts.
+    failSafeTimerRef.current = window.setTimeout(() => {
       if (!disposed) {
-        completeIntro();
+        if (!playbackStartedRef.current) {
+          completeIntro();
+        }
       }
-    }, 9000);
-
-    window.addEventListener("pointerdown", unlockAudio, { once: true, passive: true });
-    window.addEventListener("keydown", unlockAudio, { once: true });
+    }, 15000);
 
     return () => {
       disposed = true;
-      window.clearTimeout(failSafeTimer);
+      if (failSafeTimerRef.current) {
+        window.clearTimeout(failSafeTimerRef.current);
+      }
       video.removeEventListener("loadeddata", handleReady);
+      video.removeEventListener("playing", handlePlaying);
       video.removeEventListener("error", handleVideoError);
-      window.removeEventListener("pointerdown", unlockAudio);
-      window.removeEventListener("keydown", unlockAudio);
     };
   }, []);
+
+  const handleToggleMute = () => {
+    const video = videoRef.current;
+
+    if (!video) {
+      return;
+    }
+
+    const nextMuted = !video.muted;
+    video.muted = nextMuted;
+    video.defaultMuted = nextMuted;
+    setIsMuted(nextMuted);
+  };
 
   const handleEnded = () => {
     const video = videoRef.current;
@@ -143,10 +142,18 @@ export function IntroVideo({ src, poster, onComplete }) {
 
       <button
         type="button"
+        onClick={handleToggleMute}
+        className="absolute right-4 top-4 rounded-full border border-[#f2d6a2]/65 bg-[rgba(68,19,20,0.65)] px-4 py-2 text-xs font-semibold tracking-[0.12em] text-[#ffe8c4] backdrop-blur-sm"
+      >
+        {isMuted ? "TAP FOR SOUND" : "MUTED OFF"}
+      </button>
+
+      <button
+        type="button"
         onClick={completeIntro}
         className="absolute bottom-7 left-1/2 -translate-x-1/2 rounded-full border border-[#f2d6a2]/70 bg-[rgba(68,19,20,0.72)] px-6 py-2.5 text-sm font-semibold tracking-[0.12em] text-[#ffe8c4] shadow-[0_10px_26px_rgba(0,0,0,0.35)] backdrop-blur-sm transition hover:-translate-y-0.5"
       >
-        ENTER INVITATION
+        SKIP INTRO
       </button>
     </motion.section>
   );
