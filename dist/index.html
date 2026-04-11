@@ -26,10 +26,14 @@
       const isLocalDevHost =
         window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
-      if (!isLocalDevHost && !window.location.pathname.endsWith("/dist/") && !window.location.pathname.includes("/dist/")) {
+      if (
+        !isLocalDevHost &&
+        !window.location.pathname.endsWith("/dist/index.html") &&
+        !window.location.pathname.includes("/dist/index.html")
+      ) {
         // Repository-branch Pages hosting serves this root file directly.
         // Route users to the built output so hashed assets load correctly.
-        window.location.replace("./dist/");
+        window.location.replace("./dist/index.html");
       }
     </script>
   </body>
