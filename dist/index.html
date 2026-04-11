@@ -17,6 +17,34 @@
       href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script>
+      (function () {
+        const isLocalDevHost =
+          window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+
+        if (isLocalDevHost) {
+          return;
+        }
+
+        const alreadyBundledEntry = document.querySelector(
+          'script[type="module"][src*="/assets/app.js"]'
+        );
+
+        if (alreadyBundledEntry) {
+          return;
+        }
+
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = "/teju-Navin/assets/style.css";
+        document.head.appendChild(css);
+
+        const script = document.createElement("script");
+        script.type = "module";
+        script.src = "/teju-Navin/assets/app.js";
+        document.head.appendChild(script);
+      })();
+    </script>
     <script type="module" crossorigin src="/teju-Navin/assets/app.js"></script>
     <link rel="stylesheet" crossorigin href="/teju-Navin/assets/style.css">
   </head>
