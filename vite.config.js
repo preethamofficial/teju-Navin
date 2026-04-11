@@ -3,6 +3,6 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(({ command }) => ({
-  base: command === "build" ? "/wedding_invitation/" : "/",
+  base: command === "build" ? "/teju-Navin/" : "/",
   plugins: [react(), tailwindcss()],
 }));
