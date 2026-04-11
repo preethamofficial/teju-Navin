@@ -3,6 +3,16 @@ import { motion } from "motion/react";
 
 export function IntroVideo({ src, poster, onComplete }) {
   const videoRef = useRef(null);
+  const completedRef = useRef(false);
+
+  const completeIntro = () => {
+    if (completedRef.current) {
+      return;
+    }
+
+    completedRef.current = true;
+    onComplete();
+  };
 
   useEffect(() => {
     const video = videoRef.current;
@@ -51,6 +61,12 @@ export function IntroVideo({ src, poster, onComplete }) {
       }
     };
 
+    const handleVideoError = () => {
+      if (!disposed) {
+        completeIntro();
+      }
+    };
+
     const unlockAudio = async () => {
       if (disposed || !video || video.ended) {
         return;
@@ -69,12 +85,23 @@ export function IntroVideo({ src, poster, onComplete }) {
       video.addEventListener("loadeddata", handleReady, { once: true });
     }
 
+    video.addEventListener("error", handleVideoError);
+
+    // Fail-safe so the invitation never gets stuck behind video autoplay restrictions.
+    const failSafeTimer = window.setTimeout(() => {
+      if (!disposed) {
+        completeIntro();
+      }
+    }, 9000);
+
     window.addEventListener("pointerdown", unlockAudio, { once: true, passive: true });
     window.addEventListener("keydown", unlockAudio, { once: true });
 
     return () => {
       disposed = true;
+      window.clearTimeout(failSafeTimer);
       video.removeEventListener("loadeddata", handleReady);
+      video.removeEventListener("error", handleVideoError);
       window.removeEventListener("pointerdown", unlockAudio);
       window.removeEventListener("keydown", unlockAudio);
     };
@@ -87,7 +114,7 @@ export function IntroVideo({ src, poster, onComplete }) {
       video.pause();
     }
 
-    onComplete();
+    completeIntro();
   };
 
   return (
@@ -106,13 +133,21 @@ export function IntroVideo({ src, poster, onComplete }) {
         className="h-full w-full object-cover object-center"
         src={src}
         poster={poster}
-        preload="auto"
+        preload="metadata"
         autoPlay
         playsInline
         onEnded={handleEnded}
       />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,233,204,0.14),transparent_30%),linear-gradient(180deg,rgba(18,7,11,0.12)_0%,rgba(18,7,11,0.08)_45%,rgba(18,7,11,0.46)_100%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#13070b] via-[#13070b]/20 to-transparent" />
+
+      <button
+        type="button"
+        onClick={completeIntro}
+        className="absolute bottom-7 left-1/2 -translate-x-1/2 rounded-full border border-[#f2d6a2]/70 bg-[rgba(68,19,20,0.72)] px-6 py-2.5 text-sm font-semibold tracking-[0.12em] text-[#ffe8c4] shadow-[0_10px_26px_rgba(0,0,0,0.35)] backdrop-blur-sm transition hover:-translate-y-0.5"
+      >
+        ENTER INVITATION
+      </button>
     </motion.section>
   );
 }
