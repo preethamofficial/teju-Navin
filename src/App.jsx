@@ -111,8 +111,8 @@ function VenueSection() {
         style={{ backgroundImage: `linear-gradient(180deg, rgba(26,9,15,0.32), rgba(59,19,27,0.68)), url(${palaceScene})` }}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,235,204,0.18),transparent_22%)]" />
-        <div className="relative z-10 grid gap-6 md:grid-cols-[1.15fr_auto] md:items-end">
-          <div className="flex flex-col gap-3">
+        <div className="relative z-10 flex flex-col items-center gap-8 text-center">
+          <div className="flex max-w-3xl flex-col items-center gap-3 text-center">
             <span className="section-eyebrow border-white/18 bg-white/10 !text-[#ffe7c1]">Venue</span>
             <h2 className="royal-title text-[3.1rem] leading-[0.9] text-white sm:text-[4rem]">RG Convention Hall</h2>
             <p className="max-w-2xl text-base leading-7 text-[#fff1de] sm:text-lg">
@@ -127,12 +127,12 @@ function VenueSection() {
             href="https://maps.app.goo.gl/rnCemxXzGqhPc4E96"
             target="_blank"
             rel="noreferrer"
-            className="group relative z-10 inline-flex items-center gap-4 rounded-[1.6rem] border border-[#f1d7ae]/35 bg-[linear-gradient(135deg,rgba(255,246,233,0.18),rgba(245,228,198,0.16))] px-5 py-4 text-left shadow-[0_18px_42px_rgba(17,7,10,0.16)] backdrop-blur-sm transition hover:-translate-y-0.5 hover:shadow-[0_24px_56px_rgba(17,7,10,0.24)]"
+            className="group relative z-10 inline-flex items-center gap-4 rounded-[1.6rem] border border-[#f1d7ae]/35 bg-[linear-gradient(135deg,rgba(255,246,233,0.18),rgba(245,228,198,0.16))] px-5 py-4 text-center shadow-[0_18px_42px_rgba(17,7,10,0.16)] backdrop-blur-sm transition hover:-translate-y-0.5 hover:shadow-[0_24px_56px_rgba(17,7,10,0.24)]"
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#6a2330] text-white shadow-[0_12px_30px_rgba(106,35,48,0.2)]">
               <MapPinIcon className="h-5 w-5" />
             </span>
-            <span>
+            <span className="text-center">
               <span className="block text-[0.72rem] uppercase tracking-[0.28em] text-[#f8d7aa]">View on map</span>
               <span className="royal-title mt-1 block text-[2.55rem] leading-[0.9] text-white">RG Convention Hall</span>
             </span>

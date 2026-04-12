@@ -279,8 +279,8 @@ export function PhotoGallerySection() {
         </div>
       </motion.div>
 
-      <div className="mt-8 flex items-center justify-between gap-4">
-        <div>
+      <div className="mt-8 flex flex-col items-center justify-center gap-4 text-center">
+        <div className="flex flex-col items-center gap-2 text-center">
           <p className="section-eyebrow">Gallery</p>
           <h3 className="royal-title text-[2.75rem] leading-[0.9] text-[#5b1f2a] sm:text-[3.45rem]">Recent Memories</h3>
         </div>
@@ -300,7 +300,7 @@ export function PhotoGallerySection() {
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.55, delay: index * 0.04 }}
               onClick={() => setActivePhoto(photo)}
-              className="group gallery-thumb text-left"
+              className="group gallery-thumb text-center"
             >
               <div className="relative aspect-[0.88] overflow-hidden rounded-[1.25rem]">
                 <img
@@ -321,7 +321,7 @@ export function PhotoGallerySection() {
                 </a>
               </div>
 
-              <div className="px-1 pb-1 pt-3">
+              <div className="px-1 pb-1 pt-3 text-center">
                 <p className="truncate font-semibold text-[#4f1e28]">{photo.name}</p>
                 <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[#8a645e]">
                   {photo.source === "firebase"

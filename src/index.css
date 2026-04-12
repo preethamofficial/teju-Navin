@@ -60,6 +60,10 @@ body {
   text-wrap: balance;
 }
 
+.royal-title::first-letter {
+  font-size: 1.08em;
+}
+
 .section-subtitle {
   margin: 0;
   max-width: 42rem;
@@ -72,6 +76,14 @@ body {
   height: 1px;
   width: 8.4rem;
   background: linear-gradient(90deg, transparent, #b77a2f, #e0b35c, #b77a2f, transparent);
+}
+
+.section-eyebrow::before,
+.section-eyebrow::after {
+  content: "";
+  width: 0.8rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(183, 122, 47, 0.9), transparent);
 }
 
 #root {

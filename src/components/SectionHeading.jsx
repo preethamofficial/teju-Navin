@@ -1,4 +1,4 @@
-export function SectionHeading({ eyebrow, title, subtitle, align = "left" }) {
+export function SectionHeading({ eyebrow, title, subtitle, align = "center" }) {
   const alignClass = align === "center" ? "text-center items-center" : "text-left items-start";
   const dividerClass = align === "center" ? "mx-auto" : "";
 
