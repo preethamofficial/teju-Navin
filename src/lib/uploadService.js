@@ -129,8 +129,42 @@ function readStoredPhotos() {
   }
 }
 
+function toStorablePhoto(photo) {
+  const storable = {
+    id: photo.id,
+    name: photo.name,
+    source: photo.source,
+    createdAt: photo.createdAt,
+    sync: photo.sync,
+  };
+
+  // Data URLs quickly exceed localStorage quota.
+  // Persist only remotely hosted URLs.
+  if (typeof photo.url === "string" && !photo.url.startsWith("data:")) {
+    storable.url = photo.url;
+  }
+
+  if (typeof photo.downloadUrl === "string" && !photo.downloadUrl.startsWith("data:")) {
+    storable.downloadUrl = photo.downloadUrl;
+  }
+
+  return storable;
+}
+
 function writeStoredPhotos(photos) {
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(photos.slice(0, MAX_SAVED_PHOTOS)));
+  const trimmed = photos.slice(0, MAX_SAVED_PHOTOS).map(toStorablePhoto);
+
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+  } catch (error) {
+    // If storage quota is exceeded, keep the app usable by clearing the cache.
+    // Drive/Firebase can still be loaded via remote sources.
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch (_ignored) {
+      // Intentionally ignore storage cleanup failures.
+    }
+  }
 }
 
 export async function loadStoredPhotos() {
@@ -170,7 +204,7 @@ export async function loadStoredPhotos() {
     }
   }
 
-  return readStoredPhotos();
+  return readStoredPhotos().filter((photo) => photo.url && photo.downloadUrl);
 }
 
 export function getUploadMode() {
