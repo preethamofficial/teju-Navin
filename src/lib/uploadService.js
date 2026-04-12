@@ -3,7 +3,17 @@ import { getDownloadURL, getMetadata, getStorage, listAll, ref, uploadBytes } fr
 
 const STORAGE_KEY = "wedding-gallery-photos-v1";
 const MAX_SAVED_PHOTOS = 10;
-const MAX_INLINE_SYNC_BYTES = 8 * 1024 * 1024;
+
+function getMaxInlineSyncBytes() {
+  const envValue = Number(import.meta.env.VITE_MAX_INLINE_SYNC_MB);
+
+  if (Number.isFinite(envValue) && envValue > 0) {
+    return Math.round(envValue * 1024 * 1024);
+  }
+
+  // Default to 24 MB so medium/large videos can still sync directly without Firebase.
+  return 24 * 1024 * 1024;
+}
 const DEFAULT_DRIVE_WEBHOOK_URL =
   "https://script.google.com/macros/s/AKfycbwjtYZFVLi83kVse8CBQsdta65fKDROJRYL3vVEfb--MQ3GGq7TvfYlW75EqTU1K6vj/exec?secret=2ebb40f0f7ed46249b0a77591f559546";
 
@@ -533,10 +543,10 @@ export async function uploadPhoto(file) {
   if (source !== "firebase") {
     if (mediaType === "image") {
       photo.inlineDataUrl = url;
-    } else if (file.size <= MAX_INLINE_SYNC_BYTES) {
+    } else if (file.size <= getMaxInlineSyncBytes()) {
       photo.inlineDataUrl = await readBlobAsDataUrl(file);
     } else {
-      photo.sync = "failed:Video is too large for direct webhook sync without Firebase.";
+      photo.sync = "failed:Video is too large for direct webhook sync. Configure Firebase or reduce video size.";
     }
   }
 
