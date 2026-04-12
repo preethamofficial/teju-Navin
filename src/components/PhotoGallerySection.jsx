@@ -93,6 +93,7 @@ export function PhotoGallerySection() {
   const [loadingAllPhotos, setLoadingAllPhotos] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [activePhoto, setActivePhoto] = useState(null);
+  const MAX_ANIMATED_MEDIA_CARDS = 24;
   const uploadMode = getUploadMode();
   const syncMode = getSyncMode();
   const deferredPhotos = useDeferredValue(photos);
@@ -187,8 +188,9 @@ export function PhotoGallerySection() {
 
     try {
       const drivePhotos = await loadDrivePhotos(200);
-      setPhotos(drivePhotos.slice(0, 200));
-      setStatus(`Loaded ${drivePhotos.length} file(s) from Google Drive.`);
+      const smoothLimit = 120;
+      setPhotos(drivePhotos.slice(0, smoothLimit));
+      setStatus(`Loaded ${drivePhotos.length} file(s). Showing first ${Math.min(drivePhotos.length, smoothLimit)} for smooth scrolling.`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Unable to load Drive media.");
     } finally {
@@ -307,10 +309,10 @@ export function PhotoGallerySection() {
             <motion.button
               key={photo.id}
               type="button"
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.55, delay: index * 0.04 }}
+              initial={index < MAX_ANIMATED_MEDIA_CARDS ? { opacity: 0, y: 24 } : false}
+              whileInView={index < MAX_ANIMATED_MEDIA_CARDS ? { opacity: 1, y: 0 } : undefined}
+              viewport={index < MAX_ANIMATED_MEDIA_CARDS ? { once: true, amount: 0.15 } : undefined}
+              transition={index < MAX_ANIMATED_MEDIA_CARDS ? { duration: 0.55, delay: index * 0.04 } : undefined}
               onClick={() => setActivePhoto(photo)}
               className="group gallery-thumb text-center"
             >
@@ -320,7 +322,7 @@ export function PhotoGallerySection() {
                     src={photo.url}
                     muted
                     playsInline
-                    preload="metadata"
+                    preload="none"
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   />
                 ) : (
@@ -328,6 +330,7 @@ export function PhotoGallerySection() {
                     src={photo.url}
                     alt={photo.name}
                     loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   />
                 )}

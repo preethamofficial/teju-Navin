@@ -185,6 +185,12 @@ body {
   animation: cornerPulse 5.8s ease-in-out infinite;
 }
 
+.event-card,
+.gallery-thumb {
+  content-visibility: auto;
+  contain-intrinsic-size: 360px 420px;
+}
+
 .ceremony-word {
   font-family: "Cormorant Garamond", "Times New Roman", serif;
   font-size: clamp(3rem, 7.2vw, 4.35rem);
@@ -1320,5 +1326,33 @@ body {
 
   .ceremony-amp {
     font-size: clamp(2.1rem, 8vw, 2.8rem);
+  }
+
+  .mandala-burst {
+    display: none;
+  }
+
+  .royal-corners::before,
+  .royal-corners::after {
+    display: none;
+  }
+
+  .royal-panel,
+  .royal-panel-dark,
+  .hero-scene,
+  .hero-invite-panel,
+  .event-card {
+    box-shadow: none !important;
+  }
+
+  .hero-crest,
+  .royal-shimmer::after,
+  .mandala-burst {
+    animation: none !important;
+  }
+
+  .hero-invite-panel,
+  .event-card {
+    backdrop-filter: none;
   }
 }
