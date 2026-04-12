@@ -64,6 +64,16 @@ body {
   font-size: 1.08em;
 }
 
+.royal-title-embossed {
+  background: linear-gradient(180deg, #fff4dd 0%, #f0cf8b 38%, #c58d3f 64%, #f7e2b5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 1px 0 rgba(255, 248, 236, 0.58),
+    0 10px 26px rgba(73, 27, 20, 0.22);
+}
+
 .section-subtitle {
   margin: 0;
   max-width: 42rem;
@@ -124,6 +134,10 @@ body {
   background-size: cover;
   background-position: center;
   position: relative;
+  box-shadow:
+    0 36px 100px rgba(64, 21, 31, 0.26),
+    inset 0 0 0 1px rgba(255, 244, 220, 0.28),
+    inset 0 0 0 14px rgba(118, 44, 44, 0.12);
 }
 
 .hero-scene::after {
@@ -188,6 +202,7 @@ body {
   box-shadow:
     0 12px 34px rgba(79, 36, 10, 0.24),
     inset 0 0 0 6px rgba(255, 255, 255, 0.14);
+  animation: crestGlow 4.2s ease-in-out infinite;
 }
 
 .hero-crest::before,
@@ -384,13 +399,14 @@ body {
 .royal-panel {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(224, 179, 92, 0.38);
+  border: 1px solid rgba(224, 179, 92, 0.48);
   background:
     linear-gradient(180deg, rgba(255, 251, 244, 0.96), rgba(251, 238, 214, 0.92)),
     linear-gradient(145deg, rgba(128, 0, 0, 0.06), rgba(212, 175, 55, 0.08));
   box-shadow:
     0 24px 70px rgba(87, 30, 30, 0.12),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 0 0 16px rgba(255, 242, 214, 0.28);
 }
 
 .royal-panel::before,
@@ -416,10 +432,11 @@ body {
   background:
     linear-gradient(180deg, rgba(52, 13, 18, 0.84), rgba(73, 20, 28, 0.76)),
     radial-gradient(circle at top, rgba(255, 228, 173, 0.12), transparent 46%);
-  border: 1px solid rgba(248, 225, 192, 0.18);
+  border: 1px solid rgba(248, 225, 192, 0.3);
   box-shadow:
     0 26px 72px rgba(27, 6, 8, 0.28),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 0 0 16px rgba(255, 236, 202, 0.06);
 }
 
 .mandala-burst {
@@ -1031,6 +1048,21 @@ body {
   }
 }
 
+@keyframes crestGlow {
+  0%,
+  100% {
+    box-shadow:
+      0 12px 34px rgba(79, 36, 10, 0.24),
+      inset 0 0 0 6px rgba(255, 255, 255, 0.14);
+  }
+  50% {
+    box-shadow:
+      0 16px 40px rgba(97, 42, 10, 0.34),
+      0 0 24px rgba(255, 207, 127, 0.28),
+      inset 0 0 0 6px rgba(255, 255, 255, 0.16);
+  }
+}
+
 @media (min-width: 700px) {
   .hero {
     padding-top: 6.2rem;
@@ -1070,5 +1102,23 @@ body {
 
   .event-card {
     min-height: 15rem;
+  }
+
+  .hero-crest::before,
+  .hero-crest::after {
+    width: 2rem;
+  }
+
+  .hero-crest::before {
+    left: -2.5rem;
+  }
+
+  .hero-crest::after {
+    right: -2.5rem;
+  }
+
+  .hero-ornament-core {
+    letter-spacing: 0.24em;
+    font-size: 0.64rem;
   }
 }

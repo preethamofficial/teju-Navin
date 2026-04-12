@@ -5,7 +5,7 @@ export function SectionHeading({ eyebrow, title, subtitle, align = "center" }) {
   return (
     <div className={`flex flex-col gap-3 ${alignClass}`}>
       <span className="section-eyebrow">{eyebrow}</span>
-      <h2 className="royal-title text-[3rem] leading-[0.9] text-[#5b1f2a] sm:text-[3.8rem]">
+      <h2 className="royal-title royal-title-embossed text-[3rem] leading-[0.9] sm:text-[3.8rem]">
         {title}
       </h2>
       <div className={`section-divider ${dividerClass}`} />

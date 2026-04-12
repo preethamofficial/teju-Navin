@@ -264,7 +264,7 @@ export function PhotoGallerySection() {
             onChange={handleInputChange}
           />
 
-          <div className="mt-5 flex flex-col gap-2 text-xs uppercase tracking-[0.24em] text-[#8a645e] sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-5 flex flex-col items-center gap-2 text-center text-xs uppercase tracking-[0.24em] text-[#8a645e] sm:justify-center">
             <span>{status || "Ready for wedding photo uploads from mobile or desktop"}</span>
             <span>
               {uploadMode === "firebase"
@@ -282,7 +282,7 @@ export function PhotoGallerySection() {
       <div className="mt-8 flex flex-col items-center justify-center gap-4 text-center">
         <div className="flex flex-col items-center gap-2 text-center">
           <p className="section-eyebrow">Gallery</p>
-          <h3 className="royal-title text-[2.75rem] leading-[0.9] text-[#5b1f2a] sm:text-[3.45rem]">Recent Memories</h3>
+          <h3 className="royal-title royal-title-embossed text-[2.75rem] leading-[0.9] sm:text-[3.45rem]">Recent Memories</h3>
         </div>
         <span className="rounded-full border border-[#d6b385]/60 bg-white/55 px-4 py-2 text-xs uppercase tracking-[0.26em] text-[#8a645e]">
           {deferredPhotos.length} saved
