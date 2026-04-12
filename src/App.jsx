@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import introPoster from "../assets/intro-poster.svg";
 import introVideo from "../assets/wedding-intro.mp4";
-import weddingTemplateHero from "../assets/wedding-template-hero.jpg";
 import coupleUiBackground from "../assets/couple-ui-background.jpeg";
 import palaceScene from "../analysis-frames/frame-05.jpg";
 import receptionScene from "../analysis-frames/candidates/frame-22.jpg";
@@ -69,7 +68,7 @@ function InvitationHero() {
           <div className="mt-4 flex flex-col items-center justify-center gap-5 sm:mt-5">
             <div className="hero-couple-frame">
               <img
-                src={weddingTemplateHero}
+                src={coupleUiBackground}
                 alt="Traditional Hindu wedding ceremony illustration"
                 className="hero-couple-image"
               />
@@ -153,7 +152,6 @@ export default function App() {
 
     const essentialAssets = [
       coupleUiBackground,
-      weddingTemplateHero,
       receptionScene,
       muhurthamScene,
       palaceScene,
