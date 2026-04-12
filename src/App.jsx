@@ -105,7 +105,7 @@ function VenueSection() {
         <div className="relative z-10 grid gap-6 md:grid-cols-[1.15fr_auto] md:items-end">
           <div className="flex flex-col gap-3">
             <span className="section-eyebrow border-white/18 bg-white/10 !text-[#ffe7c1]">Venue</span>
-            <h2 className="font-display text-[2.2rem] leading-none text-white sm:text-[2.8rem]">RG Convention Hall</h2>
+            <h2 className="royal-title text-[2.35rem] leading-[0.95] text-white sm:text-[3.05rem]">RG Convention Hall</h2>
             <p className="max-w-2xl text-base leading-7 text-[#fff1de] sm:text-lg">
               Hirebidanur, Chikkaballapura Road, Gauribidanur
             </p>
@@ -125,7 +125,7 @@ function VenueSection() {
             </span>
             <span>
               <span className="block text-[0.72rem] uppercase tracking-[0.28em] text-[#f8d7aa]">View on map</span>
-              <span className="mt-1 block font-display text-3xl text-white">RG Convention Hall</span>
+              <span className="royal-title mt-1 block text-3xl text-white">RG Convention Hall</span>
             </span>
           </a>
         </div>

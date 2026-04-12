@@ -5,11 +5,11 @@ export function SectionHeading({ eyebrow, title, subtitle, align = "left" }) {
   return (
     <div className={`flex flex-col gap-3 ${alignClass}`}>
       <span className="section-eyebrow">{eyebrow}</span>
-      <h2 className="font-display text-[2.2rem] leading-none text-[#5b1f2a] sm:text-[2.8rem]">
+      <h2 className="royal-title text-[2.35rem] leading-[0.95] text-[#5b1f2a] sm:text-[3rem]">
         {title}
       </h2>
-      <div className={`h-px w-24 bg-gradient-to-r from-transparent via-[#c99153] to-transparent ${dividerClass}`} />
-      <p className="max-w-2xl text-sm leading-7 text-[#69413f] sm:text-base">
+      <div className={`section-divider ${dividerClass}`} />
+      <p className="section-subtitle sm:text-base">
         {subtitle}
       </p>
     </div>
