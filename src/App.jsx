@@ -191,10 +191,12 @@ export default function App() {
             <SectionHeading
               eyebrow="Wedding Celebrations"
               title={
-                <span className="ceremony-title" aria-label="Reception and Muhurtham">
-                  <span className="ceremony-word">Reception</span>
-                  <span className="ceremony-amp">&amp;</span>
-                  <span className="ceremony-word">Muhurtham</span>
+                <span className="ceremony-ribbon" aria-label="Reception and Muhurtham">
+                  <span className="ceremony-title">
+                    <span className="ceremony-word">Reception</span>
+                    <span className="ceremony-amp">&amp;</span>
+                    <span className="ceremony-word">Muhurtham</span>
+                  </span>
                 </span>
               }
               subtitle="Two beautiful gatherings, each filled with joy, blessings, and the warmth of family."

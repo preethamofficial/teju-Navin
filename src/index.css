@@ -96,6 +96,49 @@ body {
   gap: 0.85rem;
 }
 
+.ceremony-ribbon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.35rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(199, 143, 63, 0.45);
+  background:
+    linear-gradient(180deg, rgba(255, 248, 229, 0.9), rgba(248, 225, 178, 0.62)),
+    linear-gradient(140deg, rgba(141, 28, 28, 0.08), rgba(212, 175, 55, 0.1));
+  box-shadow:
+    0 18px 44px rgba(104, 39, 23, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.48);
+}
+
+.ceremony-ribbon::before,
+.ceremony-ribbon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: clamp(2.2rem, 7vw, 5.6rem);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(190, 127, 52, 0.92), transparent);
+}
+
+.ceremony-ribbon::before {
+  left: calc(-1 * clamp(2.6rem, 7.8vw, 6.2rem));
+}
+
+.ceremony-ribbon::after {
+  right: calc(-1 * clamp(2.6rem, 7.8vw, 6.2rem));
+}
+
+.ceremony-ribbon .ceremony-title::before,
+.ceremony-ribbon .ceremony-title::after {
+  content: "✦";
+  align-self: center;
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  color: #ba7a33;
+  text-shadow: 0 4px 12px rgba(90, 39, 16, 0.16);
+}
+
 .ceremony-word {
   font-family: "Cormorant Garamond", "Times New Roman", serif;
   font-size: clamp(3rem, 7.2vw, 4.35rem);
@@ -1178,6 +1221,23 @@ body {
 
   .ceremony-title {
     gap: 0.45rem;
+  }
+
+  .ceremony-ribbon {
+    padding: 0.65rem 0.95rem 0.75rem;
+  }
+
+  .ceremony-ribbon::before,
+  .ceremony-ribbon::after {
+    width: 1.7rem;
+  }
+
+  .ceremony-ribbon::before {
+    left: -2.05rem;
+  }
+
+  .ceremony-ribbon::after {
+    right: -2.05rem;
   }
 
   .ceremony-word {
