@@ -185,12 +185,6 @@ body {
   animation: cornerPulse 5.8s ease-in-out infinite;
 }
 
-.event-card,
-.gallery-thumb {
-  content-visibility: auto;
-  contain-intrinsic-size: 360px 420px;
-}
-
 .ceremony-word {
   font-family: "Cormorant Garamond", "Times New Roman", serif;
   font-size: clamp(3rem, 7.2vw, 4.35rem);

@@ -94,7 +94,6 @@ export function PhotoGallerySection() {
   const [loadingAllPhotos, setLoadingAllPhotos] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [activePhoto, setActivePhoto] = useState(null);
-  const MAX_ANIMATED_MEDIA_CARDS = 24;
   const MEDIA_PAGE_SIZE = 40;
   const uploadMode = getUploadMode();
   const syncMode = getSyncMode();
@@ -312,14 +311,10 @@ export function PhotoGallerySection() {
 
       {deferredPhotos.length > 0 ? (
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {visiblePhotos.map((photo, index) => (
-            <motion.button
+          {visiblePhotos.map((photo) => (
+            <button
               key={photo.id}
               type="button"
-              initial={index < MAX_ANIMATED_MEDIA_CARDS ? { opacity: 0, y: 24 } : false}
-              whileInView={index < MAX_ANIMATED_MEDIA_CARDS ? { opacity: 1, y: 0 } : undefined}
-              viewport={index < MAX_ANIMATED_MEDIA_CARDS ? { once: true, amount: 0.15 } : undefined}
-              transition={index < MAX_ANIMATED_MEDIA_CARDS ? { duration: 0.55, delay: index * 0.04 } : undefined}
               onClick={() => setActivePhoto(photo)}
               className="group gallery-thumb text-center"
             >
@@ -381,7 +376,7 @@ export function PhotoGallerySection() {
                       : "Drive sync: pending"}
                 </p>
               </div>
-            </motion.button>
+            </button>
           ))}
         </div>
       ) : (

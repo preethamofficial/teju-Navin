@@ -13,10 +13,6 @@ export function EventCard({ title, date, time, image, venueLine, overlay = "rose
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 36 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.35 }}
-      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
       className="event-card group royal-panel-dark royal-corners relative overflow-hidden rounded-[2rem] p-0 text-white shadow-[0_24px_70px_rgba(88,27,43,0.2)]"
       aria-label={`${title} invitation card`}
     >
