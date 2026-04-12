@@ -77,13 +77,11 @@ function InvitationHero() {
               <div className="hero-couple-overlay">
                 <div className="hero-couple-shell">
                   <p className="hero-couple-role">The Bride</p>
-                  <h1 className="hero-couple-name">
-                    Teja Shree <span className="uppercase">A</span>
-                  </h1>
+                  <h1 className="hero-couple-name">Teja Shree A</h1>
 
                   <div className="hero-couple-divider" aria-hidden="true">
                     <span />
-                    <span className="hero-couple-divider-core">&amp;</span>
+                    <span className="hero-couple-divider-core">❦</span>
                     <span />
                   </div>
 
