@@ -286,13 +286,7 @@ export function PhotoGallerySection() {
 
   return (
     <section id="gallery" className="section-shell pb-24 pt-14">
-      <motion.div
-        initial={{ opacity: 0, y: 36 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="royal-panel royal-corners rounded-[2rem] p-6 sm:p-8"
-      >
+      <div className="royal-panel royal-corners rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Blessings & Memories"
           title="Wedding memories will be shared here"
@@ -377,7 +371,7 @@ export function PhotoGallerySection() {
             </span>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       <div className="mt-8 flex flex-col items-center justify-center gap-4 text-center">
         <div className="flex flex-col items-center gap-2 text-center">

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
 import introPoster from "../assets/intro-poster.svg";
 import introVideo from "../assets/wedding-intro.mp4";
 import weddingTemplateHero from "../assets/wedding-template-hero.jpg";
@@ -42,11 +42,7 @@ function preloadImage(src) {
 
 function InvitationHero() {
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.4 }}
-      transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+    <section
       className="hero-scene mx-auto max-w-5xl overflow-hidden rounded-[2.4rem] border border-white/18 px-4 py-4 text-center shadow-[0_36px_100px_rgba(64,21,31,0.26)] sm:px-5 sm:py-5"
       style={{ backgroundImage: `url(${invitationScene})` }}
     >
@@ -103,17 +99,13 @@ function InvitationHero() {
           <p className="hero-invite-footer">We request the honor of your presence and blessings.</p>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }
 
 function VenueSection() {
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 36 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.28 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+    <section
       className="section-shell pt-14"
     >
         <div
@@ -149,7 +141,7 @@ function VenueSection() {
           </a>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }
 

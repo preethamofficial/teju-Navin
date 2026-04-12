@@ -1,5 +1,3 @@
-import { motion } from "motion/react";
-
 export function EventCard({ title, date, time, image, venueLine, overlay = "rose" }) {
   const dateMatch = date.match(/^(\d+)(st|nd|rd|th)\s+(.*)$/);
   const dayNumber = dateMatch?.[1] ?? date;
@@ -12,7 +10,7 @@ export function EventCard({ title, date, time, image, venueLine, overlay = "rose
   const titleToneClass = overlay === "rose" ? "event-main-title--rose" : "event-main-title--violet";
 
   return (
-    <motion.article
+    <article
       className="event-card group royal-panel-dark royal-corners relative overflow-hidden rounded-[2rem] p-0 text-white shadow-[0_24px_70px_rgba(88,27,43,0.2)]"
       aria-label={`${title} invitation card`}
     >
@@ -56,6 +54,6 @@ export function EventCard({ title, date, time, image, venueLine, overlay = "rose
           </div>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 }
