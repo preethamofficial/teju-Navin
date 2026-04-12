@@ -41,7 +41,7 @@ function InvitationHero() {
       style={{ backgroundImage: `url(${invitationScene})` }}
     >
       <div className="hero-veil rounded-[2.2rem] px-4 py-7 sm:px-8 sm:py-10">
-        <div className="hero-invite-panel mx-auto max-w-4xl rounded-[2rem] border border-[#f2ddbb]/68 px-5 py-6 text-white sm:px-8 sm:py-7">
+        <div className="hero-invite-panel royal-corners mx-auto max-w-4xl rounded-[2rem] border border-[#f2ddbb]/68 px-5 py-6 text-white sm:px-8 sm:py-7">
           <p className="hero-invite-kicker">Wedding Invitation</p>
           <div className="hero-crest" aria-hidden="true">
             <span>T &amp; N</span>
@@ -107,7 +107,7 @@ function VenueSection() {
       className="section-shell pt-14"
     >
         <div
-        className="royal-panel-dark relative overflow-hidden rounded-[2rem] p-6 text-white shadow-[0_26px_70px_rgba(64,21,31,0.24)] sm:p-8"
+        className="royal-panel-dark royal-corners relative overflow-hidden rounded-[2rem] p-6 text-white shadow-[0_26px_70px_rgba(64,21,31,0.24)] sm:p-8"
         style={{ backgroundImage: `linear-gradient(180deg, rgba(26,9,15,0.32), rgba(59,19,27,0.68)), url(${palaceScene})` }}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,235,204,0.18),transparent_22%)]" />
@@ -187,11 +187,11 @@ export default function App() {
         </header>
 
         <main className="relative z-10 pb-10">
-          <section id="events" className="section-shell pt-10">
+          <section id="events" className="section-shell royal-corners pt-10">
             <SectionHeading
               eyebrow="Wedding Celebrations"
               title={
-                <span className="ceremony-ribbon" aria-label="Reception and Muhurtham">
+                <span className="ceremony-ribbon royal-shimmer" aria-label="Reception and Muhurtham">
                   <span className="ceremony-title">
                     <span className="ceremony-word">Reception</span>
                     <span className="ceremony-amp">&amp;</span>

@@ -1,4 +1,4 @@
-// Google Apps Script: Direct upload endpoint to save photos into your Google Drive folder.
+// Google Apps Script: Direct upload endpoint to save images/videos into your Google Drive folder.
 // Deploy as Web App (Execute as: Me, Who has access: Anyone with the link).
 
 const CONFIG = {
@@ -54,15 +54,20 @@ function getQueryParam(e, key) {
 
 function buildDrivePhotoItem(file) {
   const fileId = file.getId();
+  const mimeType = file.getMimeType() || "";
+  const mediaType = mimeType.indexOf("video/") === 0 ? "video" : "image";
+
   return {
     id: fileId,
     name: file.getName(),
+    mimeType: mimeType,
+    mediaType: mediaType,
     createdAt: file.getDateCreated().toISOString(),
     updatedAt: file.getLastUpdated().toISOString(),
     webViewLink: file.getUrl(),
     // Requires file to be shared with link view access.
     thumbnailUrl: `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`,
-    downloadUrl: `https://drive.google.com/uc?export=view&id=${fileId}`,
+    downloadUrl: `https://drive.google.com/uc?export=download&id=${fileId}`,
   };
 }
 
@@ -110,13 +115,43 @@ function doGet(e) {
 function blobFromDataUrl(dataUrl, fileName) {
   const match = (dataUrl || "").match(/^data:([^;]+);base64,(.+)$/);
   if (!match) {
-    throw new Error("Invalid inline image data format.");
+    throw new Error("Invalid inline media data format.");
   }
 
   const mimeType = match[1] || "image/jpeg";
   const base64Data = match[2] || "";
   const bytes = Utilities.base64Decode(base64Data);
   return Utilities.newBlob(bytes, mimeType, fileName);
+}
+
+function getExtensionFromMimeType(mimeType) {
+  const normalized = (mimeType || "").toLowerCase();
+
+  if (normalized.indexOf("image/jpeg") === 0) {
+    return "jpg";
+  }
+
+  if (normalized.indexOf("image/png") === 0) {
+    return "png";
+  }
+
+  if (normalized.indexOf("image/webp") === 0) {
+    return "webp";
+  }
+
+  if (normalized.indexOf("video/mp4") === 0) {
+    return "mp4";
+  }
+
+  if (normalized.indexOf("video/quicktime") === 0) {
+    return "mov";
+  }
+
+  if (normalized.indexOf("video/webm") === 0) {
+    return "webm";
+  }
+
+  return "bin";
 }
 
 function doPost(e) {
@@ -128,9 +163,13 @@ function doPost(e) {
 
     const photo = payload.photo || {};
     const url = photo.downloadUrl || photo.url;
+    const mimeType = (photo.mimeType || "").toString();
+    const extensionFromMime = getExtensionFromMimeType(mimeType);
 
-    const baseName = sanitizeFileName(photo.name || "wedding-photo.jpg");
-    const fileName = /\.[a-z0-9]+$/i.test(baseName) ? baseName : `${baseName}.jpg`;
+    const baseName = sanitizeFileName(photo.name || "wedding-media").replace(/\.[a-z0-9]+$/i, "");
+    const fileName = /\.[a-z0-9]+$/i.test(photo.name || "")
+      ? sanitizeFileName(photo.name)
+      : `${baseName || "wedding-media"}.${extensionFromMime}`;
     const inlineDataUrl = photo.inlineDataUrl || (url && url.startsWith("data:") ? url : "");
 
     let blob;
@@ -139,15 +178,18 @@ function doPost(e) {
       blob = blobFromDataUrl(inlineDataUrl, fileName);
     } else {
       if (!url) {
-        return json({ ok: false, message: "Missing photo URL" }, 400);
+        return json({ ok: false, message: "Missing media URL" }, 400);
       }
 
       const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
       if (response.getResponseCode() < 200 || response.getResponseCode() >= 300) {
-        return json({ ok: false, message: "Could not download image" }, 502);
+        return json({ ok: false, message: "Could not download media" }, 502);
       }
 
       blob = response.getBlob();
+      if (mimeType) {
+        blob = blob.setContentType(mimeType);
+      }
       blob.setName(fileName);
     }
 
@@ -167,6 +209,7 @@ function doPost(e) {
           fileId: file.getId(),
           name: file.getName(),
           webViewLink: file.getUrl(),
+          mimeType: file.getMimeType(),
         },
       },
     });

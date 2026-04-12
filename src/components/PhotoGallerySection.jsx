@@ -40,11 +40,20 @@ function GalleryLightbox({ photo, onClose }) {
               <CloseIcon className="h-5 w-5" />
             </button>
 
-            <img
-              src={photo.url}
-              alt={photo.name}
-              className="max-h-[80vh] w-full rounded-[1.4rem] object-contain bg-[#12070b]"
-            />
+            {photo.mediaType === "video" ? (
+              <video
+                src={photo.downloadUrl || photo.url}
+                controls
+                playsInline
+                className="max-h-[80vh] w-full rounded-[1.4rem] bg-[#12070b]"
+              />
+            ) : (
+              <img
+                src={photo.url}
+                alt={photo.name}
+                className="max-h-[80vh] w-full rounded-[1.4rem] object-contain bg-[#12070b]"
+              />
+            )}
 
             <div className="flex flex-col gap-4 px-3 pb-3 pt-5 text-white sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -56,6 +65,7 @@ function GalleryLightbox({ photo, onClose }) {
                     : photo.source === "drive"
                       ? "Loaded from Google Drive"
                       : "Saved with simulated cloud storage"}
+                  {photo.mediaType === "video" ? " | Video" : " | Image"}
                 </p>
               </div>
 
@@ -94,18 +104,20 @@ export function PhotoGallerySection() {
   }, []);
 
   async function processFiles(fileList) {
-    const files = Array.from(fileList).filter((file) => file.type.startsWith("image/")).slice(0, 6);
+    const files = Array.from(fileList)
+      .filter((file) => file.type.startsWith("image/") || file.type.startsWith("video/"))
+      .slice(0, 6);
 
     if (files.length === 0) {
-      setStatus("Please choose image files to continue.");
+      setStatus("Please choose image or video files to continue.");
       return;
     }
 
     setUploading(true);
     setStatus(
       uploadMode === "firebase"
-        ? "Uploading photos to Firebase Storage..."
-        : "Saving photos now and simulating cloud sync..."
+        ? "Uploading media to Firebase Storage..."
+        : "Saving media now and simulating cloud sync..."
     );
 
     try {
@@ -136,11 +148,11 @@ export function PhotoGallerySection() {
         const firstReason = failedSync[0].sync.replace(/^failed:/, "");
         setStatus(`Upload saved, but Drive sync failed: ${firstReason}`);
       } else if (syncMode === "webhook") {
-        setStatus(`Upload complete. ${syncedCount} photo(s) synced to Google Drive.`);
+        setStatus(`Upload complete. ${syncedCount} file(s) synced to Google Drive.`);
       } else if (uploadMode === "firebase") {
-        setStatus("Upload complete. Your gallery is now synced to Firebase Storage.");
+        setStatus("Upload complete. Your gallery media is now synced to Firebase Storage.");
       } else {
-        setStatus("Upload complete. Photos are saved locally.");
+        setStatus("Upload complete. Media is saved locally.");
       }
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Upload failed. Please try again.");
@@ -171,12 +183,12 @@ export function PhotoGallerySection() {
     }
 
     setLoadingAllPhotos(true);
-    setStatus("Loading all photos from Google Drive...");
+    setStatus("Loading all media from Google Drive...");
 
     try {
       const drivePhotos = await loadDrivePhotos(200);
       setPhotos(drivePhotos.slice(0, 200));
-      setStatus(`Loaded ${drivePhotos.length} photo(s) from Google Drive.`);
+      setStatus(`Loaded ${drivePhotos.length} file(s) from Google Drive.`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Unable to load Drive photos.");
     } finally {
@@ -191,7 +203,7 @@ export function PhotoGallerySection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="royal-panel rounded-[2rem] p-6 sm:p-8"
+        className="royal-panel royal-corners rounded-[2rem] p-6 sm:p-8"
       >
         <SectionHeading
           eyebrow="Blessings & Memories"
@@ -227,11 +239,11 @@ export function PhotoGallerySection() {
 
           <h3 className="mt-5 font-display text-[2.8rem] text-[#5d2028] sm:text-[3.35rem]">Upload wedding moments</h3>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[#6e4a47] sm:text-base">
-            Add recent celebration photos from your phone or desktop, and they will appear below in a simple,
+            Add recent celebration images and videos from your phone or desktop, and they will appear below in a simple,
             elegant, and mobile-friendly gallery.
           </p>
           <p className="mx-auto mt-2 max-w-2xl text-xs uppercase tracking-[0.22em] text-[#8a645e]">
-            Showing latest 10 photos
+            Showing latest 10 media files
           </p>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -241,7 +253,7 @@ export function PhotoGallerySection() {
               className="inline-flex items-center gap-2 rounded-full bg-[#6a2330] px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_34px_rgba(106,35,48,0.22)] transition hover:-translate-y-0.5 hover:bg-[#571b27]"
             >
               <PhotoIcon className="h-4 w-4" />
-              {uploading ? "Uploading..." : "Choose photos"}
+              {uploading ? "Uploading..." : "Choose files"}
             </button>
 
             <button
@@ -251,21 +263,21 @@ export function PhotoGallerySection() {
               className="inline-flex items-center gap-2 rounded-full border border-[#6a2330]/30 bg-white/70 px-6 py-3 text-sm font-semibold text-[#6a2330] transition hover:-translate-y-0.5 hover:bg-white disabled:cursor-not-allowed disabled:opacity-70"
             >
               <PhotoIcon className="h-4 w-4" />
-              {loadingAllPhotos ? "Loading..." : "All photos"}
+              {loadingAllPhotos ? "Loading..." : "All media"}
             </button>
           </div>
 
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             multiple
             className="hidden"
             onChange={handleInputChange}
           />
 
           <div className="mt-5 flex flex-col items-center gap-2 text-center text-xs uppercase tracking-[0.24em] text-[#8a645e] sm:justify-center">
-            <span>{status || "Ready for wedding photo uploads from mobile or desktop"}</span>
+            <span>{status || "Ready for wedding media uploads from mobile or desktop"}</span>
             <span>
               {uploadMode === "firebase"
                 ? syncMode === "webhook"
@@ -303,12 +315,22 @@ export function PhotoGallerySection() {
               className="group gallery-thumb text-center"
             >
               <div className="relative aspect-[0.88] overflow-hidden rounded-[1.25rem]">
-                <img
-                  src={photo.url}
-                  alt={photo.name}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                />
+                {photo.mediaType === "video" ? (
+                  <video
+                    src={photo.url}
+                    muted
+                    playsInline
+                    preload="metadata"
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <img
+                    src={photo.url}
+                    alt={photo.name}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                )}
                 <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(28,10,14,0.05)_45%,rgba(28,10,14,0.62)_100%)]" />
                 <a
                   href={photo.downloadUrl}
@@ -328,7 +350,7 @@ export function PhotoGallerySection() {
                     ? "Firebase"
                     : photo.source === "drive"
                       ? "Google Drive"
-                      : "Simulated cloud"} | {formatDateLabel(photo.createdAt)}
+                      : "Simulated cloud"} | {photo.mediaType === "video" ? "Video" : "Image"} | {formatDateLabel(photo.createdAt)}
                 </p>
                 <p className="mt-1 text-[11px] text-[#8a645e]">
                   {photo.sync === "forwarded"
@@ -346,7 +368,7 @@ export function PhotoGallerySection() {
           <PhotoIcon className="mx-auto h-10 w-10 text-[#c18649]" />
           <p className="mt-4 font-display text-3xl text-[#5d2028]">No memories yet</p>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-7 sm:text-base">
-            The latest wedding photos will appear here in a clean gallery with preview and download options.
+            The latest wedding images and videos will appear here with preview and download options.
           </p>
         </div>
       )}

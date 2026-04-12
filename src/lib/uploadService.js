@@ -68,11 +68,57 @@ function sanitizeFileName(name) {
   return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9.-]/g, "");
 }
 
+function isImageFile(file) {
+  return typeof file?.type === "string" && file.type.startsWith("image/");
+}
+
+function isVideoFile(file) {
+  return typeof file?.type === "string" && file.type.startsWith("video/");
+}
+
+function detectMediaType(fileOrMime) {
+  const mimeType = typeof fileOrMime === "string" ? fileOrMime : fileOrMime?.type || "";
+
+  if (mimeType.startsWith("video/")) {
+    return "video";
+  }
+
+  return "image";
+}
+
+function getExtensionFromMimeType(mimeType, fallback = "jpg") {
+  const normalized = (mimeType || "").toLowerCase();
+
+  if (!normalized.includes("/")) {
+    return fallback;
+  }
+
+  const subtype = normalized.split("/")[1] || "";
+
+  if (!subtype) {
+    return fallback;
+  }
+
+  if (subtype.includes("jpeg")) {
+    return "jpg";
+  }
+
+  if (subtype.includes("quicktime")) {
+    return "mov";
+  }
+
+  if (subtype.includes("x-matroska")) {
+    return "mkv";
+  }
+
+  return subtype.replace(/[^a-z0-9]/g, "") || fallback;
+}
+
 function readBlobAsDataUrl(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error("Unable to read the uploaded image."));
+    reader.onerror = () => reject(new Error("Unable to read the selected file."));
     reader.readAsDataURL(blob);
   });
 }
@@ -115,6 +161,28 @@ async function compressImage(file) {
   return blob;
 }
 
+async function prepareUploadBlob(file) {
+  if (isImageFile(file)) {
+    return {
+      blob: await compressImage(file),
+      contentType: "image/jpeg",
+      mediaType: "image",
+      extension: "jpg",
+    };
+  }
+
+  if (isVideoFile(file)) {
+    return {
+      blob: file,
+      contentType: file.type || "video/mp4",
+      mediaType: "video",
+      extension: getExtensionFromMimeType(file.type, "mp4"),
+    };
+  }
+
+  throw new Error("Unsupported file type. Please upload images or videos.");
+}
+
 function readStoredPhotos() {
   const rawPhotos = window.localStorage.getItem(STORAGE_KEY);
 
@@ -133,6 +201,8 @@ function toStorablePhoto(photo) {
   const storable = {
     id: photo.id,
     name: photo.name,
+    mediaType: photo.mediaType || "image",
+    mimeType: photo.mimeType || "",
     source: photo.source,
     createdAt: photo.createdAt,
     sync: photo.sync,
@@ -140,11 +210,15 @@ function toStorablePhoto(photo) {
 
   // Data URLs quickly exceed localStorage quota.
   // Persist only remotely hosted URLs.
-  if (typeof photo.url === "string" && !photo.url.startsWith("data:")) {
+  if (typeof photo.url === "string" && !photo.url.startsWith("data:") && !photo.url.startsWith("blob:")) {
     storable.url = photo.url;
   }
 
-  if (typeof photo.downloadUrl === "string" && !photo.downloadUrl.startsWith("data:")) {
+  if (
+    typeof photo.downloadUrl === "string" &&
+    !photo.downloadUrl.startsWith("data:") &&
+    !photo.downloadUrl.startsWith("blob:")
+  ) {
     storable.downloadUrl = photo.downloadUrl;
   }
 
@@ -186,6 +260,8 @@ export async function loadStoredPhotos() {
             name: originalName,
             url,
             downloadUrl: url,
+            mediaType: metadata.customMetadata?.mediaType || detectMediaType(metadata.contentType),
+            mimeType: metadata.contentType || "",
             source: "firebase",
             createdAt,
             sync: metadata.customMetadata?.sync || "firebase-only",
@@ -309,8 +385,10 @@ export async function loadDrivePhotos(limit = 120) {
   return photos.map((photo) => ({
     id: photo.id,
     name: photo.name,
-    url: photo.thumbnailUrl || photo.downloadUrl || photo.webViewLink,
+    url: photo.mediaType === "video" ? photo.downloadUrl || photo.webViewLink : photo.thumbnailUrl || photo.downloadUrl || photo.webViewLink,
     downloadUrl: photo.downloadUrl || photo.webViewLink,
+    mediaType: photo.mediaType || detectMediaType(photo.mimeType || ""),
+    mimeType: photo.mimeType || "",
     source: "drive",
     createdAt: photo.createdAt || new Date().toISOString(),
     sync: "forwarded",
@@ -402,22 +480,26 @@ async function forwardPhotoToSyncWebhook(photo) {
 }
 
 export async function uploadPhoto(file) {
-  const optimizedImage = await compressImage(file);
+  const prepared = await prepareUploadBlob(file);
+  const mediaType = prepared.mediaType;
+  const extension = prepared.extension;
+  const mimeType = prepared.contentType;
   const fileName = sanitizeFileName(file.name.replace(/\.[^.]+$/, "")) || "wedding-photo";
   const photoId = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
   const storage = getFirebaseStorageInstance();
 
   let url;
   let source = "simulated";
+  const createdAt = new Date().toISOString();
 
   if (storage) {
-    const fileRef = ref(storage, `wedding-gallery/${photoId}-${fileName}.jpg`);
-    const createdAt = new Date().toISOString();
+    const fileRef = ref(storage, `wedding-gallery/${photoId}-${fileName}.${extension}`);
 
-    await uploadBytes(fileRef, optimizedImage, {
-      contentType: "image/jpeg",
+    await uploadBytes(fileRef, prepared.blob, {
+      contentType: mimeType,
       customMetadata: {
-        originalName: `${fileName}.jpg`,
+        originalName: `${fileName}.${extension}`,
+        mediaType,
         createdAt,
       },
     });
@@ -425,26 +507,34 @@ export async function uploadPhoto(file) {
     url = await getDownloadURL(fileRef);
     source = "firebase";
   } else {
-    // Google Photos direct uploads need OAuth and user-scoped APIs, so this app
-    // ships with a Firebase-ready adapter and a local simulation fallback.
-    url = await readBlobAsDataUrl(optimizedImage);
+    if (mediaType === "image") {
+      url = await readBlobAsDataUrl(prepared.blob);
+    } else {
+      url = URL.createObjectURL(file);
+    }
   }
 
   const photo = {
     id: photoId,
-    name: `${fileName}.jpg`,
+    name: `${fileName}.${extension}`,
     url,
     downloadUrl: url,
+    mediaType,
+    mimeType,
     source,
-    createdAt: new Date().toISOString(),
+    createdAt,
     sync: "firebase-only",
   };
 
-  if (source !== "firebase") {
+  if (source !== "firebase" && mediaType === "image") {
     photo.inlineDataUrl = url;
   }
 
-  if (getSyncWebhookConfig()) {
+  if (source !== "firebase" && mediaType === "video") {
+    photo.sync = "failed:Video sync needs Firebase upload or direct backend upload URL.";
+  }
+
+  if (getSyncWebhookConfig() && !(source !== "firebase" && mediaType === "video")) {
     photo.sync = await forwardPhotoToSyncWebhook(photo);
   }
 

@@ -110,7 +110,9 @@ body {
   box-shadow:
     0 18px 44px rgba(104, 39, 23, 0.16),
     inset 0 0 0 1px rgba(255, 255, 255, 0.48);
+  overflow: hidden;
 }
+
 
 .ceremony-ribbon::before,
 .ceremony-ribbon::after {
@@ -137,6 +139,50 @@ body {
   font-size: clamp(0.9rem, 2vw, 1.2rem);
   color: #ba7a33;
   text-shadow: 0 4px 12px rgba(90, 39, 16, 0.16);
+}
+
+.royal-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.royal-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: -20% auto -20% -42%;
+  width: 36%;
+  transform: skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 242, 200, 0.34), transparent);
+  filter: blur(0.5px);
+  pointer-events: none;
+  animation: ribbonShimmer 5.2s ease-in-out infinite;
+}
+
+.royal-corners {
+  position: relative;
+}
+
+.royal-corners::before,
+.royal-corners::after {
+  content: "";
+  position: absolute;
+  inset: 0.7rem;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.royal-corners::before {
+  background:
+    radial-gradient(circle at left top, rgba(240, 205, 135, 0.95) 0 2px, transparent 3px),
+    radial-gradient(circle at right top, rgba(240, 205, 135, 0.95) 0 2px, transparent 3px),
+    radial-gradient(circle at left bottom, rgba(240, 205, 135, 0.95) 0 2px, transparent 3px),
+    radial-gradient(circle at right bottom, rgba(240, 205, 135, 0.95) 0 2px, transparent 3px);
+}
+
+.royal-corners::after {
+  border: 1px solid rgba(238, 196, 116, 0.16);
+  animation: cornerPulse 5.8s ease-in-out infinite;
 }
 
 .ceremony-word {
@@ -1157,6 +1203,34 @@ body {
       0 16px 40px rgba(97, 42, 10, 0.34),
       0 0 24px rgba(255, 207, 127, 0.28),
       inset 0 0 0 6px rgba(255, 255, 255, 0.16);
+  }
+}
+
+@keyframes ribbonShimmer {
+  0% {
+    left: -46%;
+    opacity: 0;
+  }
+  16% {
+    opacity: 0.9;
+  }
+  44% {
+    left: 112%;
+    opacity: 0;
+  }
+  100% {
+    left: 112%;
+    opacity: 0;
+  }
+}
+
+@keyframes cornerPulse {
+  0%,
+  100% {
+    border-color: rgba(238, 196, 116, 0.16);
+  }
+  50% {
+    border-color: rgba(245, 214, 148, 0.36);
   }
 }
 
