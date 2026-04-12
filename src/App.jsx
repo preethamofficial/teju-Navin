@@ -169,59 +169,61 @@ export default function App() {
         ) : null}
       </AnimatePresence>
 
-      <div className="ornate-background relative isolate overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="mandala-burst left-[-8rem] top-[-8rem]" />
-          <div className="mandala-burst bottom-10 right-[-9rem] scale-[1.15]" />
-          <div className="absolute left-1/2 top-10 h-40 w-40 -translate-x-1/2 rounded-full bg-[#d59d5f]/14 blur-3xl" />
-        </div>
-
-        <header
-          ref={invitationRef}
-          className="section-shell relative z-10 pb-6"
-          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1.25rem)" }}
-        >
-          <div className="pt-6 sm:pt-10">
-            <InvitationHero />
+      {introFinished ? (
+        <div className="ornate-background relative isolate overflow-hidden">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="mandala-burst left-[-8rem] top-[-8rem]" />
+            <div className="mandala-burst bottom-10 right-[-9rem] scale-[1.15]" />
+            <div className="absolute left-1/2 top-10 h-40 w-40 -translate-x-1/2 rounded-full bg-[#d59d5f]/14 blur-3xl" />
           </div>
-        </header>
 
-        <main className="relative z-10 pb-10">
-          <section id="events" className="section-shell royal-corners pt-10">
-            <SectionHeading
-              eyebrow="Wedding Celebrations"
-              title={
-                <span className="ceremony-ribbon royal-shimmer" aria-label="Reception and Muhurtham">
-                  <span className="ceremony-title">
-                    <span className="ceremony-word">Reception</span>
-                    <span className="ceremony-amp">&amp;</span>
-                    <span className="ceremony-word">Muhurtham</span>
-                  </span>
-                </span>
-              }
-              subtitle="Two beautiful gatherings, each filled with joy, blessings, and the warmth of family."
-              align="center"
-            />
-
-            <div className="mt-8 grid gap-5 md:grid-cols-2">
-              {eventDetails.map((eventDetail) => (
-                <EventCard
-                  key={eventDetail.title}
-                  title={eventDetail.title}
-                  date={eventDetail.date}
-                  time={eventDetail.time}
-                  image={eventDetail.image}
-                  overlay={eventDetail.overlay}
-                  venueLine={["R.G. Convention Hall", "Hirebidanur, Chikkaballapura Road, Gauribidanur"]}
-                />
-              ))}
+          <header
+            ref={invitationRef}
+            className="section-shell relative z-10 pb-6"
+            style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1.25rem)" }}
+          >
+            <div className="pt-6 sm:pt-10">
+              <InvitationHero />
             </div>
-          </section>
+          </header>
 
-          <VenueSection />
-          <PhotoGallerySection />
-        </main>
-      </div>
+          <main className="relative z-10 pb-10">
+            <section id="events" className="section-shell royal-corners pt-10">
+              <SectionHeading
+                eyebrow="Wedding Celebrations"
+                title={
+                  <span className="ceremony-ribbon royal-shimmer" aria-label="Reception and Muhurtham">
+                    <span className="ceremony-title">
+                      <span className="ceremony-word">Reception</span>
+                      <span className="ceremony-amp">&amp;</span>
+                      <span className="ceremony-word">Muhurtham</span>
+                    </span>
+                  </span>
+                }
+                subtitle="Two beautiful gatherings, each filled with joy, blessings, and the warmth of family."
+                align="center"
+              />
+
+              <div className="mt-8 grid gap-5 md:grid-cols-2">
+                {eventDetails.map((eventDetail) => (
+                  <EventCard
+                    key={eventDetail.title}
+                    title={eventDetail.title}
+                    date={eventDetail.date}
+                    time={eventDetail.time}
+                    image={eventDetail.image}
+                    overlay={eventDetail.overlay}
+                    venueLine={["R.G. Convention Hall", "Hirebidanur, Chikkaballapura Road, Gauribidanur"]}
+                  />
+                ))}
+              </div>
+            </section>
+
+            <VenueSection />
+            <PhotoGallerySection />
+          </main>
+        </div>
+      ) : null}
     </div>
   );
 }
