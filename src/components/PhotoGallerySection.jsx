@@ -88,19 +88,24 @@ function GalleryLightbox({ photo, onClose }) {
 export function PhotoGallerySection() {
   const fileInputRef = useRef(null);
   const [photos, setPhotos] = useState([]);
+  const [visibleMediaCount, setVisibleMediaCount] = useState(40);
   const [status, setStatus] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loadingAllPhotos, setLoadingAllPhotos] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [activePhoto, setActivePhoto] = useState(null);
   const MAX_ANIMATED_MEDIA_CARDS = 24;
+  const MEDIA_PAGE_SIZE = 40;
   const uploadMode = getUploadMode();
   const syncMode = getSyncMode();
   const deferredPhotos = useDeferredValue(photos);
+  const visiblePhotos = deferredPhotos.slice(0, visibleMediaCount);
+  const hasMorePhotos = deferredPhotos.length > visibleMediaCount;
 
   useEffect(() => {
     loadStoredPhotos().then((storedPhotos) => {
       setPhotos(storedPhotos);
+      setVisibleMediaCount(MEDIA_PAGE_SIZE);
     });
   }, []);
 
@@ -143,6 +148,7 @@ export function PhotoGallerySection() {
 
           return mergedPhotos.slice(0, 10);
         });
+        setVisibleMediaCount(MEDIA_PAGE_SIZE);
       });
 
       if (failedSync.length > 0) {
@@ -190,6 +196,7 @@ export function PhotoGallerySection() {
       const drivePhotos = await loadDrivePhotos(200);
       const smoothLimit = 120;
       setPhotos(drivePhotos.slice(0, smoothLimit));
+      setVisibleMediaCount(MEDIA_PAGE_SIZE);
       setStatus(`Loaded ${drivePhotos.length} file(s). Showing first ${Math.min(drivePhotos.length, smoothLimit)} for smooth scrolling.`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Unable to load Drive media.");
@@ -305,7 +312,7 @@ export function PhotoGallerySection() {
 
       {deferredPhotos.length > 0 ? (
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {deferredPhotos.map((photo, index) => (
+          {visiblePhotos.map((photo, index) => (
             <motion.button
               key={photo.id}
               type="button"
@@ -386,6 +393,18 @@ export function PhotoGallerySection() {
           </p>
         </div>
       )}
+
+      {hasMorePhotos ? (
+        <div className="mt-6 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setVisibleMediaCount((current) => current + MEDIA_PAGE_SIZE)}
+            className="inline-flex items-center gap-2 rounded-full border border-[#b37a3f]/45 bg-[#fff6e6] px-6 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-[#7b4625] transition hover:-translate-y-0.5 hover:bg-[#fff0d7]"
+          >
+            Load more
+          </button>
+        </div>
+      ) : null}
 
       <div className="mt-10 text-center">
         <p className="font-display text-[1.8rem] text-[#6a2330] sm:text-[2.2rem]">Thank you</p>
