@@ -1,6 +1,6 @@
 import { startTransition, useDeferredValue, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { CloseIcon, DownloadIcon, PhotoIcon, UploadCloudIcon } from "./Icons";
+import { CloseIcon, DownloadIcon, PhotoIcon, PlayIcon, UploadCloudIcon } from "./Icons";
 import { SectionHeading } from "./SectionHeading";
 import { getSyncMode, getUploadMode, loadDrivePhotos, loadStoredPhotos, uploadPhoto } from "../lib/uploadService";
 
@@ -332,6 +332,12 @@ export function PhotoGallerySection() {
                   />
                 )}
                 <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(28,10,14,0.05)_45%,rgba(28,10,14,0.62)_100%)]" />
+                {photo.mediaType === "video" ? (
+                  <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border border-white/35 bg-black/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+                    <PlayIcon className="h-3.5 w-3.5" />
+                    Video
+                  </span>
+                ) : null}
                 <a
                   href={photo.downloadUrl}
                   download={photo.name}
@@ -345,12 +351,17 @@ export function PhotoGallerySection() {
 
               <div className="px-1 pb-1 pt-3 text-center">
                 <p className="truncate font-semibold text-[#4f1e28]">{photo.name}</p>
+                <div className="mt-1 flex justify-center">
+                  <span className="inline-flex items-center rounded-full border border-[#c8954f]/45 bg-[#fff7e8] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8a5a2f]">
+                    {photo.mediaType === "video" ? "Video" : "Image"}
+                  </span>
+                </div>
                 <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[#8a645e]">
                   {photo.source === "firebase"
                     ? "Firebase"
                     : photo.source === "drive"
                       ? "Google Drive"
-                      : "Simulated cloud"} | {photo.mediaType === "video" ? "Video" : "Image"} | {formatDateLabel(photo.createdAt)}
+                      : "Simulated cloud"} | {formatDateLabel(photo.createdAt)}
                 </p>
                 <p className="mt-1 text-[11px] text-[#8a645e]">
                   {photo.sync === "forwarded"
