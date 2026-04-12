@@ -190,7 +190,13 @@ export default function App() {
           <section id="events" className="section-shell pt-10">
             <SectionHeading
               eyebrow="Wedding Celebrations"
-              title="Reception & Muhurtham"
+              title={
+                <span className="ceremony-title" aria-label="Reception and Muhurtham">
+                  <span className="ceremony-word">Reception</span>
+                  <span className="ceremony-amp">&amp;</span>
+                  <span className="ceremony-word">Muhurtham</span>
+                </span>
+              }
               subtitle="Two beautiful gatherings, each filled with joy, blessings, and the warmth of family."
               align="center"
             />

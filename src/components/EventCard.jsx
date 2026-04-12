@@ -9,6 +9,7 @@ export function EventCard({ title, date, time, image, venueLine, overlay = "rose
     overlay === "rose"
       ? "bg-[linear-gradient(180deg,rgba(38,9,16,0.18),rgba(98,22,39,0.34),rgba(75,18,33,0.58))]"
       : "bg-[linear-gradient(180deg,rgba(25,10,27,0.18),rgba(112,40,92,0.34),rgba(78,20,58,0.6))]";
+  const titleToneClass = overlay === "rose" ? "event-main-title--rose" : "event-main-title--violet";
 
   return (
     <motion.article
@@ -36,7 +37,7 @@ export function EventCard({ title, date, time, image, venueLine, overlay = "rose
         </div>
 
         <div className="w-full max-w-[19rem] rounded-[2rem] border border-[#f3d8b1]/48 bg-[linear-gradient(180deg,rgba(95,33,36,0.26),rgba(37,12,17,0.36))] px-5 py-6 shadow-[0_24px_60px_rgba(13,4,7,0.22)] backdrop-blur-[5px] sm:max-w-[21rem] sm:px-6">
-          <p className="font-script text-[3.2rem] leading-none text-[#fff0d5] drop-shadow-[0_4px_24px_rgba(0,0,0,0.18)] sm:text-[4.4rem]">
+          <p className={`event-main-title ${titleToneClass}`}>
             {title}
           </p>
 

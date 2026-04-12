@@ -88,6 +88,60 @@ body {
   background: linear-gradient(90deg, transparent, #b77a2f, #e0b35c, #b77a2f, transparent);
 }
 
+.ceremony-title {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.85rem;
+}
+
+.ceremony-word {
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
+  font-size: clamp(3rem, 7.2vw, 4.35rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 0.92;
+  background: linear-gradient(180deg, #fff5e1 0%, #f2cf8d 42%, #bf7c2f 70%, #f8e4b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 1px 0 rgba(255, 245, 224, 0.58),
+    0 12px 30px rgba(73, 27, 20, 0.22);
+}
+
+.ceremony-amp {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(2.5rem, 6vw, 3.6rem);
+  line-height: 1;
+  color: #b06a2f;
+  text-shadow: 0 8px 22px rgba(73, 27, 20, 0.22);
+}
+
+.event-main-title {
+  margin: 0;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(3.4rem, 8vw, 4.95rem);
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  text-shadow: 0 6px 24px rgba(0, 0, 0, 0.26);
+}
+
+.event-main-title--rose {
+  background: linear-gradient(180deg, #fff6e7 0%, #f5d39f 46%, #d09453 74%, #fff0d1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.event-main-title--violet {
+  background: linear-gradient(180deg, #fff5e6 0%, #e2c4fa 44%, #b985de 72%, #ffeecf 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 .section-eyebrow::before,
 .section-eyebrow::after {
   content: "";
@@ -1120,5 +1174,17 @@ body {
   .hero-ornament-core {
     letter-spacing: 0.24em;
     font-size: 0.64rem;
+  }
+
+  .ceremony-title {
+    gap: 0.45rem;
+  }
+
+  .ceremony-word {
+    font-size: clamp(2.55rem, 10vw, 3.25rem);
+  }
+
+  .ceremony-amp {
+    font-size: clamp(2.1rem, 8vw, 2.8rem);
   }
 }
