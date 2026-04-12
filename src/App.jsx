@@ -30,6 +30,16 @@ const eventDetails = [
   },
 ];
 
+function preloadImage(src) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = () => resolve(true);
+    image.onerror = () => resolve(false);
+    image.src = src;
+  });
+}
+
 function InvitationHero() {
   return (
     <motion.section
@@ -146,9 +156,44 @@ function VenueSection() {
 export default function App() {
   const invitationRef = useRef(null);
   const [introFinished, setIntroFinished] = useState(false);
+  const [assetsReady, setAssetsReady] = useState(false);
 
   useEffect(() => {
-    if (!introFinished) {
+    let disposed = false;
+
+    const essentialAssets = [
+      invitationScene,
+      weddingTemplateHero,
+      receptionScene,
+      muhurthamScene,
+      palaceScene,
+    ];
+
+    const preloadAll = async () => {
+      await Promise.allSettled(essentialAssets.map((src) => preloadImage(src)));
+
+      if (!disposed) {
+        setAssetsReady(true);
+      }
+    };
+
+    void preloadAll();
+
+    // Never block forever if a browser delays decode callbacks.
+    const guardTimer = window.setTimeout(() => {
+      if (!disposed) {
+        setAssetsReady(true);
+      }
+    }, 4500);
+
+    return () => {
+      disposed = true;
+      window.clearTimeout(guardTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!introFinished || !assetsReady) {
       return undefined;
     }
 
@@ -159,7 +204,7 @@ export default function App() {
     return () => {
       window.clearTimeout(timer);
     };
-  }, [introFinished]);
+  }, [introFinished, assetsReady]);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#2d121a]">
@@ -169,7 +214,7 @@ export default function App() {
         ) : null}
       </AnimatePresence>
 
-      {introFinished ? (
+      {introFinished && assetsReady ? (
         <div className="ornate-background relative isolate overflow-hidden">
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <div className="mandala-burst left-[-8rem] top-[-8rem]" />
@@ -222,6 +267,18 @@ export default function App() {
             <VenueSection />
             <PhotoGallerySection />
           </main>
+        </div>
+      ) : null}
+
+      {introFinished && !assetsReady ? (
+        <div className="fixed inset-0 z-40 grid place-items-center bg-[radial-gradient(circle_at_top,rgba(255,235,194,0.14),transparent_34%),linear-gradient(180deg,#220b11_0%,#3d121b_52%,#2a0b13_100%)] px-6 text-center text-[#ffe6bf]">
+          <div className="max-w-xl">
+            <p className="section-eyebrow mx-auto border-[#f2d39d]/45 bg-[#f8e8c6]/10 !text-[#ffe1aa]">Please wait</p>
+            <h2 className="royal-title mt-5 text-[2.2rem] leading-[0.9] text-[#ffe9c5] sm:text-[2.8rem]">
+              Preparing your wedding invitation
+            </h2>
+            <p className="mt-4 text-sm uppercase tracking-[0.2em] text-[#f3cf96]">Loading royal experience...</p>
+          </div>
         </div>
       ) : null}
     </div>
