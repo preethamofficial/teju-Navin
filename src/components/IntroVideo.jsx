@@ -6,6 +6,7 @@ export function IntroVideo({ src, poster, onComplete }) {
   const completedRef = useRef(false);
   const playbackStartedRef = useRef(false);
   const failSafeTimerRef = useRef(null);
+  const progressTimerRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
 
   const completeIntro = () => {
@@ -25,6 +26,17 @@ export function IntroVideo({ src, poster, onComplete }) {
     }
 
     let disposed = false;
+
+    // Skip intro on very constrained connections to avoid a stuck first experience.
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const isConstrainedNetwork = Boolean(
+      connection && (connection.saveData || /(^|\b)(slow-2g|2g)(\b|$)/.test(connection.effectiveType || ""))
+    );
+
+    if (isConstrainedNetwork) {
+      completeIntro();
+      return undefined;
+    }
 
     const playMuted = async () => {
       video.loop = false;
@@ -64,13 +76,32 @@ export function IntroVideo({ src, poster, onComplete }) {
       }
     };
 
-    if (video.readyState >= 2) {
+    const handleStalled = () => {
+      if (!disposed && !playbackStartedRef.current) {
+        // If startup buffering stalls too long, skip intro instead of freezing.
+        if (progressTimerRef.current) {
+          window.clearTimeout(progressTimerRef.current);
+        }
+
+        progressTimerRef.current = window.setTimeout(() => {
+          if (!disposed && !playbackStartedRef.current) {
+            completeIntro();
+          }
+        }, 5000);
+      }
+    };
+
+    video.preload = "auto";
+
+    if (video.readyState >= 3) {
       void tryAutoplayMuted();
     } else {
-      video.addEventListener("loadeddata", handleReady, { once: true });
+      video.addEventListener("canplay", handleReady, { once: true });
     }
 
     video.addEventListener("playing", handlePlaying);
+    video.addEventListener("stalled", handleStalled);
+    video.addEventListener("waiting", handleStalled);
     video.addEventListener("error", handleVideoError);
 
     // Fail-safe only when playback never starts.
@@ -87,8 +118,13 @@ export function IntroVideo({ src, poster, onComplete }) {
       if (failSafeTimerRef.current) {
         window.clearTimeout(failSafeTimerRef.current);
       }
-      video.removeEventListener("loadeddata", handleReady);
+      if (progressTimerRef.current) {
+        window.clearTimeout(progressTimerRef.current);
+      }
+      video.removeEventListener("canplay", handleReady);
       video.removeEventListener("playing", handlePlaying);
+      video.removeEventListener("stalled", handleStalled);
+      video.removeEventListener("waiting", handleStalled);
       video.removeEventListener("error", handleVideoError);
     };
   }, []);
@@ -132,8 +168,9 @@ export function IntroVideo({ src, poster, onComplete }) {
         className="h-full w-full object-cover object-center"
         src={src}
         poster={poster}
-        preload="metadata"
+        preload="auto"
         autoPlay
+        muted
         playsInline
         onEnded={handleEnded}
       />
