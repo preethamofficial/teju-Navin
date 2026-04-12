@@ -3,8 +3,8 @@ import { AnimatePresence } from "motion/react";
 import introPoster from "../assets/intro-poster.svg";
 import introVideo from "../assets/wedding-intro.mp4";
 import weddingTemplateHero from "../assets/wedding-template-hero.jpg";
+import coupleUiBackground from "../assets/couple-ui-background.jpeg";
 import palaceScene from "../analysis-frames/frame-05.jpg";
-import invitationScene from "../analysis-frames/frame-15.jpg";
 import receptionScene from "../analysis-frames/candidates/frame-22.jpg";
 import muhurthamScene from "../analysis-frames/candidates/frame-29_5.jpg";
 import { EventCard } from "./components/EventCard";
@@ -44,7 +44,7 @@ function InvitationHero() {
   return (
     <section
       className="hero-scene mx-auto max-w-5xl overflow-hidden rounded-[2.4rem] border border-white/18 px-4 py-4 text-center shadow-[0_36px_100px_rgba(64,21,31,0.26)] sm:px-5 sm:py-5"
-      style={{ backgroundImage: `url(${invitationScene})` }}
+      style={{ backgroundImage: `url(${coupleUiBackground})` }}
     >
       <div className="hero-veil rounded-[2.2rem] px-4 py-7 sm:px-8 sm:py-10">
         <div className="hero-invite-panel royal-corners mx-auto max-w-4xl rounded-[2rem] border border-[#f2ddbb]/68 px-5 py-6 text-white sm:px-8 sm:py-7">
@@ -152,7 +152,7 @@ export default function App() {
     let disposed = false;
 
     const essentialAssets = [
-      invitationScene,
+      coupleUiBackground,
       weddingTemplateHero,
       receptionScene,
       muhurthamScene,
