@@ -34,7 +34,7 @@ function getFolderId() {
 }
 
 function sanitizeFileName(name) {
-  return (name || "wedding-photo")
+  return (name || "wedding-media")
     .toString()
     .toLowerCase()
     .replace(/\s+/g, "-")
@@ -52,7 +52,7 @@ function getQueryParam(e, key) {
   return (e && e.parameter && e.parameter[key]) || "";
 }
 
-function buildDrivePhotoItem(file) {
+function buildDriveMediaItem(file) {
   const fileId = file.getId();
   const mimeType = file.getMimeType() || "";
   const mediaType = mimeType.indexOf("video/") === 0 ? "video" : "image";
@@ -78,7 +78,7 @@ function listDrivePhotos(limit) {
 
   while (files.hasNext()) {
     const file = files.next();
-    photos.push(buildDrivePhotoItem(file));
+    photos.push(buildDriveMediaItem(file));
   }
 
   photos.sort(function (a, b) {
@@ -161,16 +161,16 @@ function doPost(e) {
     const bodyText = (e && e.postData && e.postData.contents) || "{}";
     const payload = JSON.parse(bodyText);
 
-    const photo = payload.photo || {};
-    const url = photo.downloadUrl || photo.url;
-    const mimeType = (photo.mimeType || "").toString();
+    const media = payload.media || payload.photo || {};
+    const url = media.downloadUrl || media.url;
+    const mimeType = (media.mimeType || "").toString();
     const extensionFromMime = getExtensionFromMimeType(mimeType);
 
-    const baseName = sanitizeFileName(photo.name || "wedding-media").replace(/\.[a-z0-9]+$/i, "");
-    const fileName = /\.[a-z0-9]+$/i.test(photo.name || "")
-      ? sanitizeFileName(photo.name)
+    const baseName = sanitizeFileName(media.name || "wedding-media").replace(/\.[a-z0-9]+$/i, "");
+    const fileName = /\.[a-z0-9]+$/i.test(media.name || "")
+      ? sanitizeFileName(media.name)
       : `${baseName || "wedding-media"}.${extensionFromMime}`;
-    const inlineDataUrl = photo.inlineDataUrl || (url && url.startsWith("data:") ? url : "");
+    const inlineDataUrl = media.inlineDataUrl || (url && url.startsWith("data:") ? url : "");
 
     let blob;
 

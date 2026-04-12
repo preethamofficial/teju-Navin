@@ -3,6 +3,7 @@ import { getDownloadURL, getMetadata, getStorage, listAll, ref, uploadBytes } fr
 
 const STORAGE_KEY = "wedding-gallery-photos-v1";
 const MAX_SAVED_PHOTOS = 10;
+const MAX_INLINE_SYNC_BYTES = 8 * 1024 * 1024;
 const DEFAULT_DRIVE_WEBHOOK_URL =
   "https://script.google.com/macros/s/AKfycbwjtYZFVLi83kVse8CBQsdta65fKDROJRYL3vVEfb--MQ3GGq7TvfYlW75EqTU1K6vj/exec?secret=2ebb40f0f7ed46249b0a77591f559546";
 
@@ -409,6 +410,8 @@ async function forwardPhotoToSyncWebhook(photo) {
     ? {
         name: photo.name,
         createdAt: photo.createdAt,
+        mediaType: photo.mediaType,
+        mimeType: photo.mimeType,
         ...(photo.inlineDataUrl
           ? { inlineDataUrl: photo.inlineDataUrl }
           : { downloadUrl: photo.downloadUrl || photo.url }),
@@ -416,6 +419,7 @@ async function forwardPhotoToSyncWebhook(photo) {
     : photo;
 
   const payload = {
+    media: webhookPhoto,
     photo: webhookPhoto,
     source: "wedding_invitation",
   };
@@ -465,7 +469,7 @@ async function forwardPhotoToSyncWebhook(photo) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "unknown";
 
-    if (message.includes("Missing photo URL")) {
+    if (message.includes("Missing photo URL") || message.includes("Missing media URL")) {
       return "failed:Drive script is using old version. Please deploy latest Apps Script version.";
     }
 
@@ -484,7 +488,7 @@ export async function uploadPhoto(file) {
   const mediaType = prepared.mediaType;
   const extension = prepared.extension;
   const mimeType = prepared.contentType;
-  const fileName = sanitizeFileName(file.name.replace(/\.[^.]+$/, "")) || "wedding-photo";
+  const fileName = sanitizeFileName(file.name.replace(/\.[^.]+$/, "")) || "wedding-media";
   const photoId = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
   const storage = getFirebaseStorageInstance();
 
@@ -526,15 +530,19 @@ export async function uploadPhoto(file) {
     sync: "firebase-only",
   };
 
-  if (source !== "firebase" && mediaType === "image") {
-    photo.inlineDataUrl = url;
+  if (source !== "firebase") {
+    if (mediaType === "image") {
+      photo.inlineDataUrl = url;
+    } else if (file.size <= MAX_INLINE_SYNC_BYTES) {
+      photo.inlineDataUrl = await readBlobAsDataUrl(file);
+    } else {
+      photo.sync = "failed:Video is too large for direct webhook sync without Firebase.";
+    }
   }
 
-  if (source !== "firebase" && mediaType === "video") {
-    photo.sync = "failed:Video sync needs Firebase upload or direct backend upload URL.";
-  }
+  const canSyncViaWebhook = source === "firebase" || Boolean(photo.inlineDataUrl);
 
-  if (getSyncWebhookConfig() && !(source !== "firebase" && mediaType === "video")) {
+  if (getSyncWebhookConfig() && canSyncViaWebhook) {
     photo.sync = await forwardPhotoToSyncWebhook(photo);
   }
 

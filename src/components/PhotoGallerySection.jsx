@@ -75,7 +75,7 @@ function GalleryLightbox({ photo, onClose }) {
                 className="inline-flex items-center gap-2 rounded-full border border-[#f1d1a2]/35 bg-[#f3e5ca]/10 px-5 py-3 text-sm font-semibold text-[#f7dfba] transition hover:bg-[#f3e5ca]/18"
               >
                 <DownloadIcon className="h-4 w-4" />
-                Download photo
+                Download file
               </a>
             </div>
           </motion.div>
@@ -190,7 +190,7 @@ export function PhotoGallerySection() {
       setPhotos(drivePhotos.slice(0, 200));
       setStatus(`Loaded ${drivePhotos.length} file(s) from Google Drive.`);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Unable to load Drive photos.");
+      setStatus(error instanceof Error ? error.message : "Unable to load Drive media.");
     } finally {
       setLoadingAllPhotos(false);
     }
@@ -208,7 +208,7 @@ export function PhotoGallerySection() {
         <SectionHeading
           eyebrow="Blessings & Memories"
           title="Wedding memories will be shared here"
-          subtitle="Photos from the celebration can be uploaded here, revisited later, and downloaded anytime by family and friends."
+          subtitle="Images and videos from the celebration can be uploaded here, revisited later, and downloaded anytime by family and friends."
         />
 
         <div
@@ -237,7 +237,7 @@ export function PhotoGallerySection() {
             <UploadCloudIcon className="h-8 w-8" />
           </div>
 
-          <h3 className="mt-5 font-display text-[2.8rem] text-[#5d2028] sm:text-[3.35rem]">Upload wedding moments</h3>
+          <h3 className="mt-5 font-display text-[2.8rem] text-[#5d2028] sm:text-[3.35rem]">Upload wedding media</h3>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[#6e4a47] sm:text-base">
             Add recent celebration images and videos from your phone or desktop, and they will appear below in a simple,
             elegant, and mobile-friendly gallery.
