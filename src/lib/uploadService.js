@@ -181,6 +181,46 @@ export function getSyncMode() {
   return getSyncWebhookConfig() ? "webhook" : "none";
 }
 
+function wait(ms) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
+
+async function fetchWithRetry(url, options, attempts = 3) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const response = await fetch(url, options);
+
+      if (response.ok) {
+        return response;
+      }
+
+      const isRetryableStatus = response.status >= 500 || response.status === 429 || response.status === 408;
+
+      if (!isRetryableStatus || attempt === attempts) {
+        return response;
+      }
+    } catch (error) {
+      lastError = error;
+
+      if (attempt === attempts) {
+        throw error;
+      }
+    }
+
+    await wait(attempt * 500);
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+
+  throw new Error("Request failed.");
+}
+
 export async function loadDrivePhotos(limit = 120) {
   const config = getSyncWebhookConfig();
 
@@ -271,7 +311,7 @@ async function forwardPhotoToSyncWebhook(photo) {
   try {
     if (isAppsScriptWebhook) {
       // Use a simple CORS request for Apps Script and read response body.
-      const response = await fetch(config.url, {
+      const response = await fetchWithRetry(config.url, {
         method: "POST",
         mode: "cors",
         headers: {
@@ -295,7 +335,7 @@ async function forwardPhotoToSyncWebhook(photo) {
       return "forwarded";
     }
 
-    const response = await fetch(config.url, {
+    const response = await fetchWithRetry(config.url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
