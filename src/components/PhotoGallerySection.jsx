@@ -12,6 +12,86 @@ function formatDateLabel(dateString) {
   });
 }
 
+function LazyMediaThumb({ photo }) {
+  const containerRef = useRef(null);
+  const [isNearViewport, setIsNearViewport] = useState(photo.mediaType !== "video");
+
+  useEffect(() => {
+    if (photo.mediaType !== "video") {
+      return undefined;
+    }
+
+    const target = containerRef.current;
+
+    if (!target) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setIsNearViewport(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "240px 0px" }
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [photo.mediaType]);
+
+  return (
+    <div ref={containerRef} className="relative aspect-[0.88] overflow-hidden rounded-[1.25rem] bg-[#2a1118]">
+      {photo.mediaType === "video" ? (
+        isNearViewport ? (
+          <video
+            src={photo.url}
+            muted
+            playsInline
+            preload="none"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_center,rgba(255,232,189,0.16),rgba(42,17,24,0.8))]">
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/30 bg-black/35 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+              <PlayIcon className="h-3.5 w-3.5" />
+              Video
+            </span>
+          </div>
+        )
+      ) : (
+        <img
+          src={photo.url}
+          alt={photo.name}
+          loading="lazy"
+          decoding="async"
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+        />
+      )}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(28,10,14,0.05)_45%,rgba(28,10,14,0.62)_100%)]" />
+      {photo.mediaType === "video" ? (
+        <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border border-white/35 bg-black/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+          <PlayIcon className="h-3.5 w-3.5" />
+          Video
+        </span>
+      ) : null}
+      <a
+        href={photo.downloadUrl}
+        download={photo.name}
+        onClick={(event) => event.stopPropagation()}
+        className="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/25 text-white opacity-0 transition group-hover:opacity-100"
+        aria-label={`Download ${photo.name}`}
+      >
+        <DownloadIcon className="h-4 w-4" />
+      </a>
+    </div>
+  );
+}
+
 function GalleryLightbox({ photo, onClose }) {
   return (
     <AnimatePresence>
@@ -318,41 +398,7 @@ export function PhotoGallerySection() {
               onClick={() => setActivePhoto(photo)}
               className="group gallery-thumb text-center"
             >
-              <div className="relative aspect-[0.88] overflow-hidden rounded-[1.25rem]">
-                {photo.mediaType === "video" ? (
-                  <video
-                    src={photo.url}
-                    muted
-                    playsInline
-                    preload="none"
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <img
-                    src={photo.url}
-                    alt={photo.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                  />
-                )}
-                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(28,10,14,0.05)_45%,rgba(28,10,14,0.62)_100%)]" />
-                {photo.mediaType === "video" ? (
-                  <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border border-white/35 bg-black/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
-                    <PlayIcon className="h-3.5 w-3.5" />
-                    Video
-                  </span>
-                ) : null}
-                <a
-                  href={photo.downloadUrl}
-                  download={photo.name}
-                  onClick={(event) => event.stopPropagation()}
-                  className="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/25 text-white opacity-0 transition group-hover:opacity-100"
-                  aria-label={`Download ${photo.name}`}
-                >
-                  <DownloadIcon className="h-4 w-4" />
-                </a>
-              </div>
+              <LazyMediaThumb photo={photo} />
 
               <div className="px-1 pb-1 pt-3 text-center">
                 <p className="truncate font-semibold text-[#4f1e28]">{photo.name}</p>

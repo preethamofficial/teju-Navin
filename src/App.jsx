@@ -206,6 +206,34 @@ export default function App() {
     };
   }, [introFinished, assetsReady]);
 
+  useEffect(() => {
+    let scrollIdleTimer = null;
+
+    const markScrolling = () => {
+      document.body.classList.add("is-scrolling");
+
+      if (scrollIdleTimer) {
+        window.clearTimeout(scrollIdleTimer);
+      }
+
+      scrollIdleTimer = window.setTimeout(() => {
+        document.body.classList.remove("is-scrolling");
+      }, 120);
+    };
+
+    window.addEventListener("scroll", markScrolling, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", markScrolling);
+
+      if (scrollIdleTimer) {
+        window.clearTimeout(scrollIdleTimer);
+      }
+
+      document.body.classList.remove("is-scrolling");
+    };
+  }, []);
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#2d121a]">
       <AnimatePresence>

@@ -29,6 +29,26 @@ body {
     linear-gradient(180deg, #fffaf1 0%, #fff6df 42%, #f8e8c4 100%);
 }
 
+body.is-scrolling .mandala-burst,
+body.is-scrolling .royal-shimmer::after,
+body.is-scrolling .hero-crest {
+  animation: none !important;
+}
+
+body.is-scrolling .royal-panel,
+body.is-scrolling .royal-panel-dark,
+body.is-scrolling .hero-scene,
+body.is-scrolling .hero-invite-panel,
+body.is-scrolling .event-card {
+  box-shadow: none !important;
+}
+
+body.is-scrolling .hero-invite-panel,
+body.is-scrolling .event-card,
+body.is-scrolling .map-frame {
+  backdrop-filter: none !important;
+}
+
 .font-display {
   font-family: "Cormorant Garamond", "Times New Roman", serif;
 }
