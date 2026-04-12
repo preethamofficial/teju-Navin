@@ -282,7 +282,7 @@ export function PhotoGallerySection() {
       <div className="mt-8 flex items-center justify-between gap-4">
         <div>
           <p className="section-eyebrow">Gallery</p>
-          <h3 className="royal-title text-[2.05rem] text-[#5b1f2a] sm:text-[2.6rem]">Recent Memories</h3>
+          <h3 className="royal-title text-[2.35rem] leading-[0.92] text-[#5b1f2a] sm:text-[2.95rem]">Recent Memories</h3>
         </div>
         <span className="rounded-full border border-[#d6b385]/60 bg-white/55 px-4 py-2 text-xs uppercase tracking-[0.26em] text-[#8a645e]">
           {deferredPhotos.length} saved
