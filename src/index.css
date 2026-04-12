@@ -43,9 +43,9 @@ body {
   background: linear-gradient(120deg, rgba(255, 246, 228, 0.9), rgba(255, 236, 200, 0.62));
   padding: 0.38rem 0.92rem;
   font-family: "Cinzel", "Times New Roman", serif;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.34em;
   text-transform: uppercase;
   color: #7d3a2d;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26);
@@ -54,17 +54,17 @@ body {
 .royal-title {
   margin: 0;
   font-family: "Cormorant Garamond", "Times New Roman", serif;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-shadow: 0 10px 24px rgba(66, 24, 29, 0.12);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: 0 12px 28px rgba(66, 24, 29, 0.16);
   text-wrap: balance;
 }
 
 .section-subtitle {
   margin: 0;
   max-width: 42rem;
-  font-size: clamp(1rem, 2.1vw, 1.16rem);
-  line-height: 1.9;
+  font-size: clamp(1.05rem, 2.25vw, 1.24rem);
+  line-height: 1.95;
   color: #69413f;
 }
 
@@ -140,29 +140,29 @@ body {
 
 .hero-invite-kicker {
   margin: 0;
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.38em;
   color: #ffdfae;
 }
 
 .hero-invite-title {
   margin: 0.45rem 0 0;
   font-family: "Cormorant Garamond", "Times New Roman", serif;
-  font-size: clamp(2.2rem, 6.3vw, 3.35rem);
-  line-height: 1;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: clamp(2.55rem, 7.2vw, 4.05rem);
+  line-height: 0.98;
+  font-weight: 700;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   color: #fff1d3;
 }
 
 .hero-invite-note {
   margin: 0.45rem auto 0;
-  max-width: 30rem;
-  font-size: clamp(0.9rem, 2.4vw, 1rem);
-  line-height: 1.6;
+  max-width: 34rem;
+  font-size: clamp(1rem, 2.6vw, 1.16rem);
+  line-height: 1.72;
   color: #ffe8c4;
 }
 
@@ -180,14 +180,14 @@ body {
   background: rgba(91, 34, 18, 0.4);
   color: #ffedc8;
   padding: 0.34rem 0.72rem;
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.16em;
 }
 
 .hero-couple-frame {
   position: relative;
-  width: min(100%, 26rem);
+  width: min(100%, 28rem);
   border-radius: 2rem;
   overflow: hidden;
   border: 1px solid rgba(246, 220, 181, 0.38);
@@ -204,7 +204,7 @@ body {
 .hero-couple-overlay {
   position: absolute;
   inset: auto 0 0;
-  padding: 0.95rem 0.95rem 1.1rem;
+  padding: 1rem 1rem 1.15rem;
   background: linear-gradient(180deg, rgba(28, 10, 15, 0.12), rgba(28, 10, 15, 0.78));
 }
 
@@ -213,26 +213,26 @@ body {
   border: 1px solid rgba(248, 225, 192, 0.48);
   background: linear-gradient(180deg, rgba(54, 18, 24, 0.32), rgba(28, 10, 15, 0.64));
   box-shadow: 0 14px 38px rgba(12, 4, 7, 0.28);
-  padding: 0.85rem 0.95rem 1.05rem;
+  padding: 0.95rem 1rem 1.15rem;
 }
 
 .hero-couple-role {
   margin: 0;
   font-family: "Cinzel", "Times New Roman", serif;
-  font-size: 0.68rem;
-  font-weight: 600;
+  font-size: 0.76rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.36em;
+  letter-spacing: 0.42em;
   color: #f6d5a8;
 }
 
 .hero-couple-name {
   margin: 0.2rem 0 0.1rem;
   font-family: "Great Vibes", cursive;
-  font-size: clamp(3.2rem, 10.8vw, 5.3rem);
+  font-size: clamp(3.7rem, 12vw, 6rem);
   line-height: 0.84;
   color: #fff8ef;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.015em;
   text-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
 }
 
@@ -261,15 +261,15 @@ body {
 
 .hero-couple-divider-core {
   font-family: "Great Vibes", cursive;
-  font-size: 2.15rem;
+  font-size: 2.45rem;
   line-height: 1;
 }
 
 .hero-invite-footer {
   margin: 0.95rem 0 0;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-style: italic;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: #ffe4ba;
 }
 
