@@ -191,7 +191,7 @@ export function PhotoGallerySection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="ornate-card rounded-[2rem] p-6 sm:p-8"
+        className="royal-panel rounded-[2rem] p-6 sm:p-8"
       >
         <SectionHeading
           eyebrow="Blessings & Memories"
@@ -225,7 +225,7 @@ export function PhotoGallerySection() {
             <UploadCloudIcon className="h-8 w-8" />
           </div>
 
-          <h3 className="mt-5 font-display text-4xl text-[#5d2028]">Upload wedding moments</h3>
+          <h3 className="mt-5 font-display text-[2.8rem] text-[#5d2028] sm:text-[3.35rem]">Upload wedding moments</h3>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[#6e4a47] sm:text-base">
             Add recent celebration photos from your phone or desktop, and they will appear below in a simple,
             elegant, and mobile-friendly gallery.

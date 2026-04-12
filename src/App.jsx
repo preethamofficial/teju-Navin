@@ -37,14 +37,23 @@ function InvitationHero() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.4 }}
       transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-      className="hero-scene mx-auto max-w-4xl overflow-hidden rounded-[2.2rem] border border-white/18 px-4 py-4 text-center shadow-[0_30px_80px_rgba(64,21,31,0.22)] sm:px-5 sm:py-5"
+      className="hero-scene mx-auto max-w-5xl overflow-hidden rounded-[2.4rem] border border-white/18 px-4 py-4 text-center shadow-[0_36px_100px_rgba(64,21,31,0.26)] sm:px-5 sm:py-5"
       style={{ backgroundImage: `url(${invitationScene})` }}
     >
-      <div className="hero-veil rounded-[2rem] px-4 py-7 sm:px-8 sm:py-9">
-        <div className="hero-invite-panel mx-auto max-w-3xl rounded-[2rem] border border-[#f2ddbb]/68 px-5 py-6 text-white sm:px-7">
+      <div className="hero-veil rounded-[2.2rem] px-4 py-7 sm:px-8 sm:py-10">
+        <div className="hero-invite-panel mx-auto max-w-4xl rounded-[2rem] border border-[#f2ddbb]/68 px-5 py-6 text-white sm:px-8 sm:py-7">
           <p className="hero-invite-kicker">Wedding Invitation</p>
+          <div className="hero-crest" aria-hidden="true">
+            <span>T &amp; N</span>
+          </div>
           <h2 className="hero-invite-title">Together with our families</h2>
           <p className="hero-invite-note">We invite you and your loved ones to celebrate our wedding.</p>
+
+          <div className="hero-ornament" aria-hidden="true">
+            <span />
+            <span className="hero-ornament-core">A royal celebration</span>
+            <span />
+          </div>
 
           <div className="hero-meta" aria-label="Wedding details">
             <span>23 April 2026</span>
@@ -97,8 +106,8 @@ function VenueSection() {
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       className="section-shell pt-14"
     >
-      <div
-        className="relative overflow-hidden rounded-[2rem] border border-white/15 p-6 text-white shadow-[0_26px_70px_rgba(64,21,31,0.24)] sm:p-8"
+        <div
+        className="royal-panel-dark relative overflow-hidden rounded-[2rem] p-6 text-white shadow-[0_26px_70px_rgba(64,21,31,0.24)] sm:p-8"
         style={{ backgroundImage: `linear-gradient(180deg, rgba(26,9,15,0.32), rgba(59,19,27,0.68)), url(${palaceScene})` }}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,235,204,0.18),transparent_22%)]" />
