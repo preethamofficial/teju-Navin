@@ -1,4 +1,4 @@
-export function SectionHeading({ eyebrow, title, subtitle, align = "center" }) {
+export function SectionHeading({ eyebrow, title, subtitle, align = "center", subtitleClassName = "" }) {
   const alignClass = align === "center" ? "text-center items-center" : "text-left items-start";
   const dividerClass = align === "center" ? "mx-auto" : "";
 
@@ -9,7 +9,7 @@ export function SectionHeading({ eyebrow, title, subtitle, align = "center" }) {
         {title}
       </h2>
       <div className={`section-divider ${dividerClass}`} />
-      <p className="section-subtitle sm:text-base">
+      <p className={`section-subtitle sm:text-base ${subtitleClassName}`}>
         {subtitle}
       </p>
     </div>

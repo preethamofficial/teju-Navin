@@ -108,6 +108,20 @@ body.is-scrolling .map-frame {
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
+.section-subtitle--ceremony {
+  color: #5a2730;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 245, 0.92), rgba(251, 238, 214, 0.74)),
+    radial-gradient(circle at top, rgba(230, 184, 109, 0.12), transparent 64%);
+  border: 1px solid rgba(188, 132, 68, 0.32);
+  border-radius: 999px;
+  padding: 0.46rem 1.12rem;
+  box-shadow:
+    0 8px 22px rgba(104, 39, 23, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.54);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.62);
+}
+
 .section-divider {
   height: 1px;
   width: 8.4rem;

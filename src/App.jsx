@@ -210,6 +210,7 @@ export default function App() {
                   </span>
                 }
                 subtitle="Two beautiful gatherings, each filled with joy, blessings, and the warmth of family."
+                subtitleClassName="section-subtitle--ceremony"
                 align="center"
               />
 
