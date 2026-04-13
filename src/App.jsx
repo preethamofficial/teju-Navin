@@ -67,7 +67,7 @@ function InvitationHero() {
                   <p className="hero-couple-role">Wedding Couple</p>
                   <h1 className="hero-couple-signature">
                     <span className="hero-couple-signature-name hero-couple-signature-name--bride">Teja Shree A</span>
-                    <span className="hero-couple-signature-symbol" aria-hidden="true">&amp;</span>
+                    <span className="hero-couple-signature-symbol" aria-hidden="true">{" & "}</span>
                     <span className="hero-couple-signature-name hero-couple-signature-name--groom">Navin Reddy S</span>
                   </h1>
                 </div>
