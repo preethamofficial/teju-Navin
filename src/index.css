@@ -532,6 +532,25 @@ body.is-scrolling .map-frame {
 
 .hero-couple-name--groom {
   color: #fff2e0;
+  font-size: clamp(3.95rem, 12.8vw, 6.25rem);
+  letter-spacing: 0.02em;
+}
+
+.hero-initial-n {
+  display: inline-block;
+  margin-right: 0.04em;
+  padding: 0.02em 0.16em 0.06em;
+  transform: translateY(-0.03em);
+  font-family: "Cinzel Decorative", "Cinzel", "Times New Roman", serif;
+  font-size: 1.11em;
+  font-weight: 700;
+  line-height: 0.92;
+  color: #fff2cf;
+  background: linear-gradient(180deg, #fff7d8 0%, #f4d793 45%, #c98d32 100%);
+  border: 1px solid rgba(255, 235, 191, 0.55);
+  border-radius: 0.45em;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  text-shadow: 0 1px 0 rgba(94, 48, 9, 0.22), 0 8px 18px rgba(0, 0, 0, 0.22);
 }
 
 .hero-couple-divider {

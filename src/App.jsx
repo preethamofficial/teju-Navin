@@ -82,7 +82,7 @@ function InvitationHero() {
 
                   <p className="hero-couple-role">The Groom</p>
                   <h1 className="hero-couple-name hero-couple-name--groom">
-                    Navin Reddy S
+                    <span className="hero-initial-n">N</span>avin Reddy S
                   </h1>
                 </div>
               </div>
