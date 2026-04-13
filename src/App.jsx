@@ -3,6 +3,7 @@ import { AnimatePresence } from "motion/react";
 import introPoster from "../assets/intro-poster.svg";
 import introVideo from "../assets/wedding-intro.mp4";
 import coupleUiBackground from "../assets/couple-ui-background.jpeg";
+import brideNameBackdrop from "../assets/wedding-template-hero.jpg";
 import palaceScene from "../analysis-frames/frame-05.jpg";
 import receptionScene from "../analysis-frames/candidates/frame-22.jpg";
 import muhurthamScene from "../analysis-frames/candidates/frame-29_5.jpg";
@@ -72,7 +73,12 @@ function InvitationHero() {
                     <span />
                   </div>
                   <p className="hero-couple-role">The Bride</p>
-                  <h1 className="hero-couple-name">Teja Shree A</h1>
+                  <h1
+                    className="hero-couple-name hero-couple-name--bride-box"
+                    style={{ "--bride-name-bg": `url(${brideNameBackdrop})` }}
+                  >
+                    Teja Shree A
+                  </h1>
                 </div>
               </div>
             </div>
