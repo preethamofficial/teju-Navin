@@ -71,23 +71,11 @@ function InvitationHero() {
 
               <div className="hero-couple-overlay">
                 <div className="hero-couple-shell">
-                  <p className="hero-couple-role">The Bride</p>
-                  <h1 className="hero-couple-name hero-couple-name--bride">
-                    <span className="hero-signature-text">Teja Shree</span>
-                    <span className="hero-signature-tail">A</span>
-                  </h1>
-
-                  <div className="hero-couple-divider" aria-hidden="true">
-                    <span />
-                    <span className="hero-couple-divider-core">❦</span>
-                    <span />
-                  </div>
-
-                  <p className="hero-couple-role">The Groom</p>
-                  <h1 className="hero-couple-name hero-couple-name--groom">
-                    <span className="hero-initial-n">N</span>
-                    <span className="hero-signature-text">avin Reddy</span>
-                    <span className="hero-signature-tail">S</span>
+                  <p className="hero-couple-role">Wedding Couple</p>
+                  <h1 className="hero-couple-signature">
+                    <span className="hero-couple-signature-name hero-couple-signature-name--bride">Yeja Shree A</span>
+                    <span className="hero-couple-signature-symbol" aria-hidden="true">❦</span>
+                    <span className="hero-couple-signature-name hero-couple-signature-name--groom">Nanin Reddy S</span>
                   </h1>
                 </div>
               </div>
