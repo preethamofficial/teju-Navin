@@ -522,35 +522,73 @@ body.is-scrolling .map-frame {
 
 .hero-couple-name {
   margin: 0.2rem 0 0.1rem;
+  position: relative;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.06em;
+  line-height: 0.88;
+  animation: signatureFloat 5.2s ease-in-out infinite;
+}
+
+.hero-couple-name::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -0.08em;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 234, 198, 0.88), transparent);
+  opacity: 0.85;
+}
+
+.hero-signature-text {
   font-family: "Great Vibes", cursive;
-  font-size: clamp(3.7rem, 12vw, 6rem);
-  line-height: 0.84;
-  color: #fff8ef;
+  font-size: clamp(3.5rem, 11.4vw, 5.85rem);
   letter-spacing: 0.015em;
-  text-shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-size: 180% auto;
+  text-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+  animation: signatureSheen 6.8s ease-in-out infinite;
+}
+
+.hero-signature-tail {
+  font-family: "Cinzel Decorative", "Cinzel", "Times New Roman", serif;
+  font-size: 0.34em;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ffe3b7;
+  transform: translateY(-0.28em);
+  text-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
+}
+
+.hero-couple-name--bride .hero-signature-text {
+  background-image: linear-gradient(180deg, #fff5e9 0%, #f8ddbe 38%, #d5a26f 72%, #fff0db 100%);
 }
 
 .hero-couple-name--groom {
-  color: #fff2e0;
-  font-size: clamp(3.95rem, 12.8vw, 6.25rem);
-  letter-spacing: 0.02em;
+  animation-delay: 0.35s;
+}
+
+.hero-couple-name--groom .hero-signature-text {
+  background-image: linear-gradient(180deg, #fff7e8 0%, #f3dab0 38%, #cb9954 74%, #ffefcf 100%);
 }
 
 .hero-initial-n {
   display: inline-block;
-  margin-right: 0.04em;
-  padding: 0.02em 0.16em 0.06em;
-  transform: translateY(-0.03em);
+  margin-right: -0.02em;
+  transform: translateY(-0.06em);
   font-family: "Cinzel Decorative", "Cinzel", "Times New Roman", serif;
-  font-size: 1.11em;
+  font-size: clamp(3.6rem, 11.6vw, 6rem);
   font-weight: 700;
-  line-height: 0.92;
-  color: #fff2cf;
-  background: linear-gradient(180deg, #fff7d8 0%, #f4d793 45%, #c98d32 100%);
-  border: 1px solid rgba(255, 235, 191, 0.55);
-  border-radius: 0.45em;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.22);
-  text-shadow: 0 1px 0 rgba(94, 48, 9, 0.22), 0 8px 18px rgba(0, 0, 0, 0.22);
+  line-height: 0.86;
+  color: transparent;
+  background-image: linear-gradient(180deg, #fff7d9 0%, #f4d286 44%, #bd7f2b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 10px 24px rgba(0, 0, 0, 0.26);
 }
 
 .hero-couple-divider {
@@ -1235,6 +1273,26 @@ body.is-scrolling .map-frame {
   50% {
     transform: scale(1.05);
     opacity: 0.9;
+  }
+}
+
+@keyframes signatureFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes signatureSheen {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
   }
 }
 
