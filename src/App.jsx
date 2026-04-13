@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import introPoster from "../assets/intro-poster.svg";
 import introVideo from "../assets/wedding-intro.mp4";
@@ -9,8 +9,11 @@ import muhurthamScene from "../analysis-frames/candidates/frame-29_5.jpg";
 import { EventCard } from "./components/EventCard";
 import { IntroVideo } from "./components/IntroVideo";
 import { MapPinIcon } from "./components/Icons";
-import { PhotoGallerySection } from "./components/PhotoGallerySection";
 import { SectionHeading } from "./components/SectionHeading";
+
+const PhotoGallerySection = lazy(() =>
+  import("./components/PhotoGallerySection").then((module) => ({ default: module.PhotoGallerySection }))
+);
 
 const eventDetails = [
   {
@@ -28,16 +31,6 @@ const eventDetails = [
     overlay: "violet",
   },
 ];
-
-function preloadImage(src) {
-  return new Promise((resolve) => {
-    const image = new Image();
-    image.decoding = "async";
-    image.onload = () => resolve(true);
-    image.onerror = () => resolve(false);
-    image.src = src;
-  });
-}
 
 function InvitationHero() {
   return (
@@ -73,9 +66,9 @@ function InvitationHero() {
                 <div className="hero-couple-shell">
                   <p className="hero-couple-role">Wedding Couple</p>
                   <h1 className="hero-couple-signature">
-                    <span className="hero-couple-signature-name hero-couple-signature-name--bride">Yeja Shree A</span>
-                    <span className="hero-couple-signature-symbol" aria-hidden="true">❦</span>
-                    <span className="hero-couple-signature-name hero-couple-signature-name--groom">Nanin Reddy S</span>
+                    <span className="hero-couple-signature-name hero-couple-signature-name--bride">Teja Shree A</span>
+                    <span className="hero-couple-signature-symbol" aria-hidden="true">&amp;</span>
+                    <span className="hero-couple-signature-name hero-couple-signature-name--groom">Navin Reddy S</span>
                   </h1>
                 </div>
               </div>
@@ -134,43 +127,9 @@ function VenueSection() {
 export default function App() {
   const invitationRef = useRef(null);
   const [introFinished, setIntroFinished] = useState(false);
-  const [assetsReady, setAssetsReady] = useState(false);
 
   useEffect(() => {
-    let disposed = false;
-
-    const essentialAssets = [
-      coupleUiBackground,
-      receptionScene,
-      muhurthamScene,
-      palaceScene,
-    ];
-
-    const preloadAll = async () => {
-      await Promise.allSettled(essentialAssets.map((src) => preloadImage(src)));
-
-      if (!disposed) {
-        setAssetsReady(true);
-      }
-    };
-
-    void preloadAll();
-
-    // Never block forever if a browser delays decode callbacks.
-    const guardTimer = window.setTimeout(() => {
-      if (!disposed) {
-        setAssetsReady(true);
-      }
-    }, 4500);
-
-    return () => {
-      disposed = true;
-      window.clearTimeout(guardTimer);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!introFinished || !assetsReady) {
+    if (!introFinished) {
       return undefined;
     }
 
@@ -181,7 +140,7 @@ export default function App() {
     return () => {
       window.clearTimeout(timer);
     };
-  }, [introFinished, assetsReady]);
+  }, [introFinished]);
 
   useEffect(() => {
     let scrollIdleTimer = null;
@@ -219,7 +178,7 @@ export default function App() {
         ) : null}
       </AnimatePresence>
 
-      {introFinished && assetsReady ? (
+      {introFinished ? (
         <div className="ornate-background relative isolate overflow-hidden">
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <div className="mandala-burst left-[-8rem] top-[-8rem]" />
@@ -270,20 +229,16 @@ export default function App() {
             </section>
 
             <VenueSection />
-            <PhotoGallerySection />
+            <Suspense
+              fallback={
+                <section className="section-shell pb-24 pt-14 text-center text-[#7d5953]">
+                  Loading memories...
+                </section>
+              }
+            >
+              <PhotoGallerySection />
+            </Suspense>
           </main>
-        </div>
-      ) : null}
-
-      {introFinished && !assetsReady ? (
-        <div className="fixed inset-0 z-40 grid place-items-center bg-[radial-gradient(circle_at_top,rgba(255,235,194,0.14),transparent_34%),linear-gradient(180deg,#220b11_0%,#3d121b_52%,#2a0b13_100%)] px-6 text-center text-[#ffe6bf]">
-          <div className="max-w-xl">
-            <p className="section-eyebrow mx-auto border-[#f2d39d]/45 bg-[#f8e8c6]/10 !text-[#ffe1aa]">Please wait</p>
-            <h2 className="royal-title mt-5 text-[2.2rem] leading-[0.9] text-[#ffe9c5] sm:text-[2.8rem]">
-              Preparing your wedding invitation
-            </h2>
-            <p className="mt-4 text-sm uppercase tracking-[0.2em] text-[#f3cf96]">Loading royal experience...</p>
-          </div>
         </div>
       ) : null}
     </div>

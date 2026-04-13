@@ -87,11 +87,11 @@ export function IntroVideo({ src, poster, onComplete }) {
           if (!disposed && !playbackStartedRef.current) {
             completeIntro();
           }
-        }, 5000);
+        }, 2500);
       }
     };
 
-    video.preload = "auto";
+    video.preload = "metadata";
 
     if (video.readyState >= 3) {
       void tryAutoplayMuted();
@@ -111,7 +111,7 @@ export function IntroVideo({ src, poster, onComplete }) {
           completeIntro();
         }
       }
-    }, 15000);
+    }, 7000);
 
     return () => {
       disposed = true;
@@ -168,7 +168,7 @@ export function IntroVideo({ src, poster, onComplete }) {
         className="h-full w-full object-cover object-center"
         src={src}
         poster={poster}
-        preload="auto"
+        preload="metadata"
         autoPlay
         muted
         playsInline
