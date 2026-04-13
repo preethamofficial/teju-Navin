@@ -67,11 +67,7 @@ function InvitationHero() {
 
           <div className="mt-4 flex flex-col items-center justify-center gap-5 sm:mt-5">
             <div className="hero-couple-frame">
-              <img
-                src={coupleUiBackground}
-                alt="Traditional Hindu wedding ceremony illustration"
-                className="hero-couple-image"
-              />
+              <div className="hero-couple-image-placeholder" aria-hidden="true" />
 
               <div className="hero-couple-overlay">
                 <div className="hero-couple-shell">
