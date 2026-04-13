@@ -533,20 +533,26 @@ body.is-scrolling .map-frame {
 .hero-couple-role {
   margin: 0;
   font-family: "Cinzel", "Times New Roman", serif;
-  font-size: 0.76rem;
+  font-size: 0.9rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.42em;
+  letter-spacing: 0.34em;
   color: #f6d5a8;
 }
 
 .hero-couple-name {
   margin: 0.2rem 0 0.1rem;
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
+  font-size: clamp(2.6rem, 8.6vw, 4.4rem);
+  font-weight: 700;
+  letter-spacing: 0.012em;
+  color: #fff1dd;
+  text-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
   position: relative;
   display: inline-flex;
   align-items: flex-end;
   gap: 0.06em;
-  line-height: 0.88;
+  line-height: 0.94;
   animation: signatureFloat 5.2s ease-in-out infinite;
 }
 
@@ -644,7 +650,7 @@ body.is-scrolling .map-frame {
 }
 
 .hero-couple-divider span {
-  width: 4rem;
+  width: 4.8rem;
   height: 1px;
   background: linear-gradient(90deg, transparent, #ffe3bc, transparent);
 }
@@ -655,7 +661,7 @@ body.is-scrolling .map-frame {
 
 .hero-couple-divider-core {
   font-family: "Great Vibes", cursive;
-  font-size: 2.45rem;
+  font-size: 3rem;
   line-height: 1;
 }
 
