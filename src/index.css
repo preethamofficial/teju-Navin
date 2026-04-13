@@ -99,7 +99,13 @@ body.is-scrolling .map-frame {
   max-width: 42rem;
   font-size: clamp(1.08rem, 2.3vw, 1.28rem);
   line-height: 2;
-  color: #69413f;
+  color: #4f1e28;
+  font-weight: 600;
+  background: linear-gradient(180deg, rgba(255, 250, 239, 0.86), rgba(255, 243, 224, 0.68));
+  border: 1px solid rgba(187, 130, 70, 0.24);
+  border-radius: 0.9rem;
+  padding: 0.32rem 0.8rem;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .section-divider {
@@ -627,14 +633,17 @@ body.is-scrolling .map-frame {
 }
 
 .hero-couple-signature-name {
-  font-family: "Great Vibes", cursive;
-  font-size: clamp(2.9rem, 8.8vw, 4.8rem);
-  letter-spacing: 0.012em;
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(2.65rem, 8vw, 4.35rem);
+  letter-spacing: 0.02em;
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
   background-size: 180% auto;
-  text-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  -webkit-text-stroke: 0.35px rgba(87, 41, 14, 0.16);
+  text-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
   animation: signatureSheen 6.6s ease-in-out infinite;
 }
 
