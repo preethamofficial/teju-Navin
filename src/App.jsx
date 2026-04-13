@@ -73,7 +73,12 @@ function InvitationHero() {
               <div className="hero-couple-overlay">
                 <div className="hero-couple-shell">
                   <p className="hero-couple-role">The Groom</p>
-                  <h1 className="hero-couple-name hero-couple-name--groom">Navin Reddy S</h1>
+                  <h1
+                    className="hero-couple-name hero-couple-name--groom hero-couple-name--image-box"
+                    style={{ "--name-box-bg": `url(${weddingTemplateHero})` }}
+                  >
+                    Navin Reddy S
+                  </h1>
                   <div className="hero-couple-divider" aria-hidden="true">
                     <span />
                     <span className="hero-couple-divider-core">❦</span>
@@ -81,8 +86,8 @@ function InvitationHero() {
                   </div>
                   <p className="hero-couple-role">The Bride</p>
                   <h1
-                    className="hero-couple-name hero-couple-name--bride-box"
-                    style={{ "--bride-name-bg": `url(${weddingTemplateHero})` }}
+                    className="hero-couple-name hero-couple-name--image-box"
+                    style={{ "--name-box-bg": `url(${weddingTemplateHero})` }}
                   >
                     Teja Shree A
                   </h1>

@@ -602,21 +602,21 @@ body.is-scrolling .map-frame {
   background-image: linear-gradient(180deg, #fff7e8 0%, #f3dab0 38%, #cb9954 74%, #ffefcf 100%);
 }
 
-.hero-couple-name--bride-box {
+.hero-couple-name--image-box {
   position: relative;
   isolation: isolate;
   border-radius: 0.46em;
   padding: 0.07em 0.34em 0.14em;
 }
 
-.hero-couple-name--bride-box::before {
+.hero-couple-name--image-box::before {
   content: "";
   position: absolute;
   inset: -0.08em -0.18em -0.1em;
   border-radius: inherit;
   background-image:
     linear-gradient(180deg, rgba(28, 10, 15, 0.45), rgba(28, 10, 15, 0.72)),
-    var(--bride-name-bg);
+    var(--name-box-bg);
   background-size: cover;
   background-position: center 34%;
   box-shadow:
