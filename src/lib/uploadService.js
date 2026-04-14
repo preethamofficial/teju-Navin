@@ -233,6 +233,14 @@ function toStorablePhoto(photo) {
     storable.downloadUrl = photo.downloadUrl;
   }
 
+  if (
+    typeof photo.thumbnailUrl === "string" &&
+    !photo.thumbnailUrl.startsWith("data:") &&
+    !photo.thumbnailUrl.startsWith("blob:")
+  ) {
+    storable.thumbnailUrl = photo.thumbnailUrl;
+  }
+
   return storable;
 }
 
@@ -291,6 +299,10 @@ export async function loadStoredPhotos() {
     }
   }
 
+  return readStoredPhotos().filter((photo) => photo.url && photo.downloadUrl);
+}
+
+export function loadCachedPhotos() {
   return readStoredPhotos().filter((photo) => photo.url && photo.downloadUrl);
 }
 
@@ -398,6 +410,7 @@ export async function loadDrivePhotos(limit = 120) {
     name: photo.name,
     url: photo.mediaType === "video" ? photo.downloadUrl || photo.webViewLink : photo.thumbnailUrl || photo.downloadUrl || photo.webViewLink,
     downloadUrl: photo.downloadUrl || photo.webViewLink,
+    thumbnailUrl: photo.thumbnailUrl || "",
     mediaType: photo.mediaType || detectMediaType(photo.mimeType || ""),
     mimeType: photo.mimeType || "",
     source: "drive",

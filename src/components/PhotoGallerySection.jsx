@@ -2,7 +2,7 @@ import { startTransition, useDeferredValue, useEffect, useRef, useState } from "
 import { AnimatePresence, motion } from "motion/react";
 import { CloseIcon, DownloadIcon, PhotoIcon, PlayIcon, UploadCloudIcon } from "./Icons";
 import { SectionHeading } from "./SectionHeading";
-import { getSyncMode, getUploadMode, loadDrivePhotos, loadStoredPhotos, uploadPhoto } from "../lib/uploadService";
+import { getSyncMode, getUploadMode, loadCachedPhotos, loadDrivePhotos, loadStoredPhotos, uploadPhoto } from "../lib/uploadService";
 
 function formatDateLabel(dateString) {
   return new Date(dateString).toLocaleDateString("en-IN", {
@@ -13,46 +13,15 @@ function formatDateLabel(dateString) {
 }
 
 function LazyMediaThumb({ photo }) {
-  const containerRef = useRef(null);
-  const [isNearViewport, setIsNearViewport] = useState(photo.mediaType !== "video");
-
-  useEffect(() => {
-    if (photo.mediaType !== "video") {
-      return undefined;
-    }
-
-    const target = containerRef.current;
-
-    if (!target) {
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setIsNearViewport(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "240px 0px" }
-    );
-
-    observer.observe(target);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [photo.mediaType]);
-
   return (
-    <div ref={containerRef} className="relative aspect-[0.88] overflow-hidden rounded-[1.25rem] bg-[#2a1118]">
+    <div className="relative aspect-[0.88] overflow-hidden rounded-[1.25rem] bg-[#2a1118]">
       {photo.mediaType === "video" ? (
-        isNearViewport ? (
-          <video
-            src={photo.url}
-            muted
-            playsInline
-            preload="none"
+        photo.thumbnailUrl ? (
+          <img
+            src={photo.thumbnailUrl}
+            alt={photo.name}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />
         ) : (
@@ -125,6 +94,7 @@ function GalleryLightbox({ photo, onClose }) {
                 src={photo.downloadUrl || photo.url}
                 controls
                 playsInline
+                preload="metadata"
                 className="max-h-[80vh] w-full rounded-[1.4rem] bg-[#12070b]"
               />
             ) : (
@@ -182,6 +152,8 @@ export function PhotoGallerySection() {
   const hasMorePhotos = deferredPhotos.length > visibleMediaCount;
 
   useEffect(() => {
+    setPhotos(loadCachedPhotos());
+
     loadStoredPhotos().then((storedPhotos) => {
       setPhotos(storedPhotos);
       setVisibleMediaCount(MEDIA_PAGE_SIZE);
@@ -206,32 +178,35 @@ export function PhotoGallerySection() {
     );
 
     try {
-      const uploadedPhotos = [];
+      let completed = 0;
+      let syncedCount = 0;
+      const failedSync = [];
 
       for (const file of files) {
         const uploadedPhoto = await uploadPhoto(file);
-        uploadedPhotos.push(uploadedPhoto);
+        completed += 1;
+
+        if (uploadedPhoto.sync === "forwarded") {
+          syncedCount += 1;
+        }
+
+        if (typeof uploadedPhoto.sync === "string" && uploadedPhoto.sync.startsWith("failed:")) {
+          failedSync.push(uploadedPhoto.sync);
+        }
+
+        startTransition(() => {
+          setPhotos((currentPhotos) => {
+            const mergedPhotos = [uploadedPhoto, ...currentPhotos.filter((currentPhoto) => currentPhoto.id !== uploadedPhoto.id)];
+            return mergedPhotos.slice(0, 10);
+          });
+          setVisibleMediaCount(MEDIA_PAGE_SIZE);
+        });
+
+        setStatus(`Uploaded ${completed}/${files.length} file(s)...`);
       }
 
-      const syncedCount = uploadedPhotos.filter((photo) => photo.sync === "forwarded").length;
-      const failedSync = uploadedPhotos.filter((photo) => typeof photo.sync === "string" && photo.sync.startsWith("failed:"));
-
-      startTransition(() => {
-        setPhotos((currentPhotos) => {
-          const mergedPhotos = [
-            ...uploadedPhotos,
-            ...currentPhotos.filter(
-              (currentPhoto) => !uploadedPhotos.some((uploadedPhoto) => uploadedPhoto.id === currentPhoto.id)
-            ),
-          ];
-
-          return mergedPhotos.slice(0, 10);
-        });
-        setVisibleMediaCount(MEDIA_PAGE_SIZE);
-      });
-
       if (failedSync.length > 0) {
-        const firstReason = failedSync[0].sync.replace(/^failed:/, "");
+        const firstReason = failedSync[0].replace(/^failed:/, "");
         setStatus(`Upload saved, but Drive sync failed: ${firstReason}`);
       } else if (syncMode === "webhook") {
         setStatus(`Upload complete. ${syncedCount} file(s) synced to Google Drive.`);
